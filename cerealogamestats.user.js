@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        1.11.9
+// @version        1.11.10
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -154,14 +154,29 @@ var storage =
 	},
 	set : function(id,txt)
 	{
-		win.localStorage[this.id(id)] = txt;
+		var key = this.id(id);
+		try
+		{
+			win.localStorage.setItem(key, txt);
+		}
+		catch(e)
+		{
+			win.localStorage[key] = txt;
+		}
 		return txt;
 	},
 	get : function(id)
 	{
-		return (win.localStorage.hasOwnProperty(this.id(id)))
-			? win.localStorage[this.id(id)]
-			: null;
+		var key = this.id(id);
+		try
+		{
+			return win.localStorage.getItem(key);
+		}
+		catch(e)
+		{
+			var val = win.localStorage[key];
+			return (val == 'undefined') ? null : val;
+		}
 	}
 }
 
