@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        1.11.10
+// @version        2.0.1
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -334,7 +334,9 @@ i18n.set(
 	o_bdg:'banned',
 	o_bdq:'unbanned',
 	o_ldt:'Latest data (for future statistics)',
-	o_abt:'Statistics performed with {link}'
+	o_abt:'Statistics performed with {link}',
+	// OGame Error
+	e_oga:'OGame Error, reload this page may fix it'
 });
 
 // locale [es] español
@@ -398,7 +400,9 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	o_bdg:'baneado',
 	o_bdq:'desbaneado',
 	o_ldt:'Datos más recientes (para futuras estadísticas)',
-	o_abt:'Estadísticas realizadas con {link}'
+	o_abt:'Estadísticas realizadas con {link}',
+	// OGame Error
+	e_oga:'Error de OGame, recargar esta página puede arreglarlo'
 });
 
 // colors
@@ -1795,7 +1799,9 @@ Form.prototype =
 			return;
 		}
 		
-		var clock = doc.getElementById('OGameClock');
+		var clock = doc.getElementById('OGameClock'); // ogame<5 compatibility
+                if (clock==null)
+                    clock = doc.querySelector('li.OGameClock');
 		var data =
 		{	
 			timestamp : ogameInfo.timestamp,
@@ -1823,7 +1829,11 @@ Form.prototype =
 				rank = tds[2].innerHTML;
 			rank = rank.trim();
 			
-			var score = tds[3].getElementsByTagName('span')[0];
+			var score = tds[3].getElementsByTagName('span');
+                        if (score.length > 0)
+                            score = score[0]; // ogame<5 compatibility
+                        else
+                            score = tds[3];
 			var position = score.getElementsByTagName('a')[0];
 			score = score.getAttribute('title');
 			score = parseInt(score.replace(/\D/gi,''));
@@ -1845,9 +1855,23 @@ Form.prototype =
 				c: coord,
 				d: date
 			};
+			
+			var info = data.members[user];
+			if (
+				/NaN|undefined|null/.test(info.i+'') ||
+				(info.r) == null || typeof info.r == 'undefined' ||
+				/NaN|undefined|null/.test(info.s+'') ||
+				/NaN|undefined|null/.test(info.p+'') ||
+				(!(/^\d+\:\d+\:\d+$/.test(info.c+''))) ||
+				(info.d) == null || typeof info.r == 'undefined'
+			)
+			{
+				return false;
+			}
 		}
 		this.currentPageData = JSON.stringify(data);
 		this.setNewList(this.currentPageData);
+		return true;
 	},
 	setErrorStatus : function (text)
 	{
@@ -1952,7 +1976,13 @@ Section.prototype =
 		
 		this.form = new Form (this.content);
 		this.form.setErrorStatus(_('e_nod'));
-		this.form.setNewListFromPage();
+		if (!this.form.setNewListFromPage())
+		{
+			this.sectioncontent.innerHTML =
+				'<div style="color:red;text-align:center;font-weigth:bold;padding:30px">'+
+				_('e_oga')+
+				'</div>';
+		}
 		this.form.load();
 		if (this.form.oldList.value=='')
 		{
