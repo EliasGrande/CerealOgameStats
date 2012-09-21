@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.0.2
+// @version        2.1.1
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -326,8 +326,10 @@ i18n.set(
 	o_ppm:'Points per member',
 	o_tts:'Top 3 by score',
 	o_ttp:'Top 3 by percent',
+	o_ttg:'Top 3 by gained positions',
 	o_trs:'Score rank',
 	o_trp:'Percent rank',
+	o_trg:'Gained positions rank',
 	o_tsc:'Special cases',
 	o_cnm:'new member',
 	o_cla:'leaves the alliance',
@@ -392,8 +394,10 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	o_ppm:'Puntos por miembro',
 	o_tts:'Top 3 por puntos',
 	o_ttp:'Top 3 por porcentaje',
+	o_ttg:'Top 3 por posiciones subidas',
 	o_trs:'Ranking por puntos',
 	o_trp:'Ranking por porcentaje',
+	o_trg:'Ranking por posiciones subidas',
 	o_tsc:'Casos especiales',
 	o_cnm:'nuevo miembro',
 	o_cla:'abandona la alianza',
@@ -456,15 +460,17 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	w_dne:'Prêt',
 	w_pcs:'Traitement en cours',
 	// output
-	o_tdt:'Évolution de l\'alliance depuis {oldDate} à {newDate}',
+	o_tdt:'Évolution de l\'alliance du {oldDate} au {newDate}',
 	o_tet:'Temps passé',
 	o_tas:'Résumé de l\'Alliance ',
 	o_ptl:'Points Totaux',
 	o_ppm:'Points par membres',
 	o_tts:'Top 3 par score',
 	o_ttp:'Top 3 par pourcentage',
-	o_trs:'Rang par Score',
-	o_trp:'Rang par Pourcentage',
+	o_ttg:'Top 3 par places gagnées',
+	o_trs:'Rang par score',
+	o_trp:'Rang par pourcentage',
+	o_trg:'Rang par places gagnées',
 	o_tsc:'Cas spéciaux',
 	o_cnm:'Nouveaux Membres',
 	o_cla:'A quitter l\'alliance',
@@ -588,6 +594,10 @@ var Format = function()
 		'[color={nameColor}][b]{name}[/b][/color] '+
 		'([b][color={diffColor}]{diffPercent}[/color][/b] '+
 		'[color={diffColor}][size=small]%[/size][/color])',
+		top3PositionsLine : "\n"+
+		'[color={diffColor}]{position} {diff} [/color] '+
+		'[color={nameColor}][b]{name}[/b][/color] '+
+		'([b][color={diffColor}]{diffPos}[/color][/b])',
 		rankLine : "\n"+
 		'[color={diffColor}]{position} {diff} [/color]'+
 		'[color={nameColor}][b]{name}[/b][/color] '+
@@ -753,7 +763,11 @@ Format.prototype =
 				info.diffScore
 			).replaceMap({
 				'{position}' : this.position(i+1,end),
-				'{name}'     : this.escape(info.name)
+				'{name}'     : this.escape(info.name),
+				'{diffPos}'  : info.formatted.diffPos.replaceMap({
+					'+': '{up}',
+					'-': '{down}'
+				})
 			}).replaceAll(
 				'{'+key+'}', info.formatted[key]
 			);
@@ -845,10 +859,12 @@ Format.prototype =
 		if (include.alliance)
 				output = output + this.alliance(allyInfo);
 		
-		var top3Score   = '';
-		var top3Percent = '';
-		var scoreRank   = '';
-		var percentRank = '';
+		var top3Score     = '';
+		var top3Percent   = '';
+		var top3Positions = '';
+		var scoreRank     = '';
+		var percentRank   = '';
+		var positionsRank = '';
 		
 		if(membersInfo.length > 0)
 		{	
@@ -887,11 +903,29 @@ Format.prototype =
 				
 			if (include.percent)
 				percentRank = this.rank(membersInfo,_('o_trp'));
+			
+			membersInfo = membersInfo.sort(function(a,b)
+			{
+				return (a.diffPos>=b.diffPos) ? -1 : 1;
+			});
+			
+			if(include.top3Positions&&(membersInfo.length>5||!include.positions))
+			{
+				top3Positions = this.top3(
+					membersInfo,
+					'diffPos',
+					_('o_ttg'),
+					this.layout.top3PositionsLine
+				);
+			}
+			
+			if (include.positions)
+				positionsRank = this.rank(membersInfo,_('o_trg'));
 		}
 		
 		output = output +
-			top3Score + top3Percent +
-			scoreRank + percentRank;
+			top3Score + top3Percent + top3Positions +
+			scoreRank + percentRank + positionsRank;
 		
 		if (include.special)
 			output = output + this.specialCases(
@@ -1250,13 +1284,15 @@ Conversor.prototype =
 				throw 'NaN|Infinity';
 			}*/
 			var include = {
-				alliance    : form.doAlliance.checked,
-				top3Score   : form.doTop3Score.checked,
-				top3Percent : form.doTop3Percent.checked,
-				score       : form.doScore.checked,
-				percent     : form.doPercent.checked,
-				special     : form.doSpecial.checked,
-				data        : form.doData.checked
+				alliance      : form.doAlliance.checked,
+				top3Score     : form.doTop3Score.checked,
+				top3Percent   : form.doTop3Percent.checked,
+				top3Positions : form.doTop3Positions.checked,
+				score         : form.doScore.checked,
+				percent       : form.doPercent.checked,
+				positions     : form.doPositions.checked,
+				special       : form.doSpecial.checked,
+				data          : form.doData.checked
 			};
 			form.setStats(format.format(
 				include,
@@ -1739,8 +1775,10 @@ var Form = function (parent)
 	this.doAlliance = dom.addCheckbox(td,_('o_tas'),'doAlliance',true,doIt);
 	this.doTop3Score = dom.addCheckbox(td,_('o_tts'),'doTop3Score',true,doIt);
 	this.doTop3Percent = dom.addCheckbox(td,_('o_ttp'),'doTop3Percent',true,doIt);
+	this.doTop3Positions = dom.addCheckbox(td,_('o_ttg'),'doTop3Positions',false,doIt);
 	this.doScore = dom.addCheckbox(td,_('o_trs'),'doScore',true,doIt);
 	this.doPercent = dom.addCheckbox(td,_('o_trp'),'doPercent',true,doIt);
+	this.doPositions = dom.addCheckbox(td,_('o_trg'),'doPositions',false,doIt);
 	this.doSpecial = dom.addCheckbox(td,_('o_tsc'),'doSpecial',true,doIt);
 	this.doData = dom.addCheckbox(td,_('o_ldt'),'doData',true,doIt);
 	tr.appendChild(td);
