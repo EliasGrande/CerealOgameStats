@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.1.1
+// @version        2.2
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -33,13 +33,80 @@
 */
 (function(){
 
+// crossbrowser unsafeWindow & document
+
+var win = window, doc;
+
+try
+{
+	if (unsafeWindow)
+	{
+		win = unsafeWindow;
+	}
+}
+catch(e){}
+
+doc = win.document;
+
+// backup memberlist before the "pretty-titles script" delete the titles
+
+var addCss = function (text)
+{
+	var el = doc.createElement('style');
+	el.setAttribute('type','text/css');
+	
+	if (el.styleSheet)
+		el.styleSheet.cssText = text;
+	else
+		el.appendChild(doc.createTextNode(text));
+	
+	var head = doc.getElementsByTagName("head")[0];
+	head.appendChild(el);
+}
+
+addCss('#member-list {display:none;}');
+
+var memberList =
+{
+	ready : false,
+	list  : doc.createElement('table'),
+	wait  : 10
+}
+
+var initMemberList = function()
+{
+	try
+	{
+		var list = doc.getElementById('member-list');
+		if (!list)
+			throw 0;
+		else
+		{
+			memberList.list.innerHTML = list.innerHTML;
+			memberList.ready = true;
+			delete memberList.wait;
+			addCss('#member-list {display:table;}');
+		}
+	}
+	catch (e)
+	{
+		memberList.wait = Math.round(memberList.wait*1.1);
+		var _this = this;
+		setTimeout(initMemberList, memberList.wait);
+	}
+}
+
+initMemberList();
+
+// script general info
+
 var script =
 {
 	name : 'CerealOgameStats',
 	home : 'http://userscripts.org/scripts/show/134405'
 }
 	
-// extend prototypes
+// extend some prototypes
 
 String.prototype.replaceAll = function (search, replacement)
 {
@@ -51,6 +118,7 @@ var _StringReplaceMap = function (str, org, rep, index)
 {
 	if (index==0)
 		return str.split(org[0]).join(rep[0]);
+
 
 	var i, arr;
 	arr = str.split(org[index]);
@@ -86,21 +154,6 @@ String.prototype.trimNaN = function ()
 {
 	return this.replace(/^\D*(\d)/,'$1').replace(/(\d)\D*$/,'$1');
 }
-
-// crossbrowser unsafeWindow & document
-
-var win = window, doc;
-
-try
-{
-	if (unsafeWindow)
-	{
-		win = unsafeWindow;
-	}
-}
-catch(e){}
-
-doc = win.document;
 
 var onDOMContentLoaded = function()
 {
@@ -1478,7 +1531,7 @@ Dom.prototype =
 			toggle:toggle
 		}
 	},
-	addCss : function (css)
+	addCss : addCss/*function (css)
 	{
 		var text;
 		/*if (typeof css == "object")
@@ -1493,7 +1546,8 @@ Dom.prototype =
 				text = text + '}';
 			}	
 		}
-		else*/
+		else
+		* /
 			text = css;
 		
 		var el = doc.createElement('style');
@@ -1506,7 +1560,7 @@ Dom.prototype =
 		
 		var head = doc.getElementsByTagName("head")[0];
 		head.appendChild(el);
-	}
+	}*/
 }
 
 var dom = new Dom();
@@ -1918,10 +1972,9 @@ Form.prototype =
 			strTime : i18n.time(clock.getElementsByTagName('span')[0].innerHTML),
 			members : {}
 		};
-			
-		var memberList = doc.getElementById('member-list');
+
 		var trs =
-			memberList.getElementsByTagName('tbody')[0
+			memberList.list.getElementsByTagName('tbody')[0
 			].getElementsByTagName('tr');
 		
 		for (var i=0; i<trs.length; i++)
@@ -2069,13 +2122,7 @@ Section.prototype =
 	loadForm : function()
 	{
 		this.canLoad = false;
-		try
-		{
-			var memberList = doc.getElementById('allyMemberlist');
-			memberList = memberList.getElementsByTagName('div')[0];
-			if (!memberList) throw 0;
-		}
-		catch (e)
+		if (!memberList.ready)
 		{
 			this.wTime = Math.round(this.wTime*1.1);
 			var _this = this;
