@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.2
+// @version        2.3
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -377,11 +377,13 @@ i18n.set(
 	o_tas:'Alliance summary',
 	o_ptl:'Total points',
 	o_ppm:'Points per member',
-	o_tts:'Top 3 by score',
-	o_ttp:'Top 3 by percent',
+	o_ttt:'Top 3 by total score',
+	o_tts:'Top 3 by gained score',
+	o_ttp:'Top 3 by gained percent',
 	o_ttg:'Top 3 by gained positions',
-	o_trs:'Score rank',
-	o_trp:'Percent rank',
+	o_trt:'Total score rank',
+	o_trs:'Gained score rank',
+	o_trp:'Gained percent rank',
 	o_trg:'Gained positions rank',
 	o_tsc:'Special cases',
 	o_cnm:'new member',
@@ -445,11 +447,13 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	o_tas:'Resumen de la alianza',
 	o_ptl:'Puntos totales',
 	o_ppm:'Puntos por miembro',
-	o_tts:'Top 3 por puntos',
-	o_ttp:'Top 3 por porcentaje',
+	o_ttt:'Top 3 por puntos totales',
+	o_tts:'Top 3 por puntos subidos',
+	o_ttp:'Top 3 por porcentaje subido',
 	o_ttg:'Top 3 por posiciones subidas',
-	o_trs:'Ranking por puntos',
-	o_trp:'Ranking por porcentaje',
+	o_trt:'Ranking por puntos totales',
+	o_trs:'Ranking por puntos subidos',
+	o_trp:'Ranking por porcentaje subido',
 	o_trg:'Ranking por posiciones subidas',
 	o_tsc:'Casos especiales',
 	o_cnm:'nuevo miembro',
@@ -515,14 +519,16 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	// output
 	o_tdt:'Évolution de l\'alliance du {oldDate} au {newDate}',
 	o_tet:'Temps passé',
-	o_tas:'Résumé de l\'Alliance ',
-	o_ptl:'Points Totaux',
+	o_tas:'Résumé de l\'alliance ',
+	o_ptl:'Points totaux',
 	o_ppm:'Points par membres',
-	o_tts:'Top 3 par score',
-	o_ttp:'Top 3 par pourcentage',
+	o_ttt:'Top 3 par points totaux',
+	o_tts:'Top 3 par points gagnées',
+	o_ttp:'Top 3 par pourcentage gagné',
 	o_ttg:'Top 3 par places gagnées',
-	o_trs:'Rang par score',
-	o_trp:'Rang par pourcentage',
+	o_trt:'Rang par points totaux',
+	o_trs:'Rang par points gagnées',
+	o_trp:'Rang par pourcentage gagné',
 	o_trg:'Rang par places gagnées',
 	o_tsc:'Cas spéciaux',
 	o_cnm:'Nouveaux Membres',
@@ -638,6 +644,10 @@ var Format = function()
 		'([b][color={diffColor}]{diffScore}[/color][/b]) '+
 		'([b][color={diffColor}]{diffPercent}[/color][/b] '+
 		'[color={diffColor}][size=small]%[/size][/color])',
+		top3TScoreLine : "\n"+
+		'[color={diffColor}]{position} {diff} [/color] '+
+		'[color={nameColor}][b]{name}[/b][/color] '+
+		'({newScore})',
 		top3ScoreLine : "\n"+
 		'[color={diffColor}]{position} {diff} [/color] '+
 		'[color={nameColor}][b]{name}[/b][/color] '+
@@ -913,17 +923,52 @@ Format.prototype =
 				output = output + this.alliance(allyInfo);
 		
 		var top3Score     = '';
+		var top3TScore    = '';
 		var top3Percent   = '';
 		var top3Positions = '';
+		var tScoreRank    = '';
 		var scoreRank     = '';
 		var percentRank   = '';
 		var positionsRank = '';
 		
 		if(membersInfo.length > 0)
-		{	
+		{
+			// TOTAL SCORE
+		
 			membersInfo = membersInfo.sort(function(a,b)
 			{
-				return (a.diffScore>=b.diffScore) ? -1 : 1;
+				if (a.newScore==b.newScore)
+					return (a.diffScore>=b.diffScore) ? -1 : 1;
+				else
+					return (a.newScore>=b.newScore) ? -1 : 1;
+			});
+			
+			if(include.top3TScore&&(membersInfo.length>5||!include.tScore))
+			{
+				top3TScore = this.top3(
+					membersInfo,
+					'newScore',
+					_('o_ttt'),
+					this.layout.top3TScoreLine
+				);
+			}
+			
+			if (include.tScore)
+				tScoreRank = this.rank(membersInfo,_('o_trt'));
+				
+			// GAINED SCORE
+		
+			membersInfo = membersInfo.sort(function(a,b)
+			{
+				if (a.diffScore==b.diffScore)
+				{
+					if (a.diffPercent==b.diffPercent)
+						return (a.newScore>=b.newScore) ? -1 : 1;
+					else
+						return (a.diffPercent>=b.diffPercent) ? -1 : 1;
+				}
+				else
+					return (a.diffScore>=b.diffScore) ? -1 : 1;
 			});
 			
 			if(include.top3Score&&(membersInfo.length>5||!include.score))
@@ -939,9 +984,19 @@ Format.prototype =
 			if (include.score)
 				scoreRank = this.rank(membersInfo,_('o_trs'));
 			
+			// GAINED PERCENT
+			
 			membersInfo = membersInfo.sort(function(a,b)
 			{
-				return (a.diffPercent>=b.diffPercent) ? -1 : 1;
+				if (a.diffPercent==b.diffPercent)
+				{
+					if (a.diffScore==b.diffScore)
+						return (a.newScore>=b.newScore) ? -1 : 1;
+					else
+						return (a.diffScore>=b.diffScore) ? -1 : 1;
+				}
+				else
+					return (a.diffPercent>=b.diffPercent) ? -1 : 1;
 			});
 			
 			if(include.top3Percent&&(membersInfo.length>5||!include.percent))
@@ -957,9 +1012,24 @@ Format.prototype =
 			if (include.percent)
 				percentRank = this.rank(membersInfo,_('o_trp'));
 			
+			// GAINED POSITIONS
+			
 			membersInfo = membersInfo.sort(function(a,b)
 			{
-				return (a.diffPos>=b.diffPos) ? -1 : 1;
+				if (a.diffPos==b.diffPos)
+				{
+					if (a.diffScore==b.diffScore)
+					{
+						if (a.diffPercent==b.diffPercent)
+							return (a.newScore>=b.newScore) ? -1 : 1;
+						else
+							return (a.diffPercent>=b.diffPercent) ? -1 : 1;
+					}
+					else
+						return (a.diffScore>=b.diffScore) ? -1 : 1;
+				}
+				else
+					return (a.diffPos>=b.diffPos) ? -1 : 1;
 			});
 			
 			if(include.top3Positions&&(membersInfo.length>5||!include.positions))
@@ -977,8 +1047,8 @@ Format.prototype =
 		}
 		
 		output = output +
-			top3Score + top3Percent + top3Positions +
-			scoreRank + percentRank + positionsRank;
+			top3TScore + top3Score + top3Percent + top3Positions +
+			tScoreRank + scoreRank + percentRank + positionsRank;
 		
 		if (include.special)
 			output = output + this.specialCases(
@@ -1338,9 +1408,11 @@ Conversor.prototype =
 			}*/
 			var include = {
 				alliance      : form.doAlliance.checked,
+				top3TScore    : form.doTop3TScore.checked,
 				top3Score     : form.doTop3Score.checked,
 				top3Percent   : form.doTop3Percent.checked,
 				top3Positions : form.doTop3Positions.checked,
+				tScore        : form.doTScore.checked,
 				score         : form.doScore.checked,
 				percent       : form.doPercent.checked,
 				positions     : form.doPositions.checked,
@@ -1827,9 +1899,11 @@ var Form = function (parent)
 	td = dom.newCell();
 	td.setAttribute('class','col2');
 	this.doAlliance = dom.addCheckbox(td,_('o_tas'),'doAlliance',true,doIt);
+	this.doTop3TScore = dom.addCheckbox(td,_('o_ttt'),'doTopT3Score',false,doIt);
 	this.doTop3Score = dom.addCheckbox(td,_('o_tts'),'doTop3Score',true,doIt);
 	this.doTop3Percent = dom.addCheckbox(td,_('o_ttp'),'doTop3Percent',true,doIt);
 	this.doTop3Positions = dom.addCheckbox(td,_('o_ttg'),'doTop3Positions',false,doIt);
+	this.doTScore = dom.addCheckbox(td,_('o_trt'),'doTScore',false,doIt);
 	this.doScore = dom.addCheckbox(td,_('o_trs'),'doScore',true,doIt);
 	this.doPercent = dom.addCheckbox(td,_('o_trp'),'doPercent',true,doIt);
 	this.doPositions = dom.addCheckbox(td,_('o_trg'),'doPositions',false,doIt);
