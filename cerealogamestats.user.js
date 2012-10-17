@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.3
+// @version        2.4
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -113,18 +113,15 @@ String.prototype.replaceAll = function (search, replacement)
 	return this.split(search).join(replacement);
 }
 
-
-var _StringReplaceMap = function (str, org, rep, index)
+String.prototype.recursiveReplaceMap = function (org, rep, index)
 {
 	if (index==0)
-		return str.split(org[0]).join(rep[0]);
+		return this.split(org[0]).join(rep[0]);
 
-
-	var i, arr;
-	arr = str.split(org[index]);
+	var i, arr = this.split(org[index]);
 	for (i in arr)
 	{
-		arr[i] = _StringReplaceMap(arr[i], org, rep, index-1);
+		arr[i] = arr[i].recursiveReplaceMap(org, rep, index-1);
 	}
 	
 	return arr.join(rep[index]);
@@ -147,12 +144,12 @@ String.prototype.replaceMap = function (replaceMap)
 	if (count==0)
 		return this;
 	else
-		return _StringReplaceMap (this,org,rep,count-1);
+		return this.recursiveReplaceMap(org,rep,count-1);
 }
 
 String.prototype.trimNaN = function ()
 {
-	return this.replace(/^\D*(\d)/,'$1').replace(/(\d)\D*$/,'$1');
+	return this.replace(/^\D+$/,'').replace(/^\D*(\d)/,'$1').replace(/(\d)\D*$/,'$1');
 }
 
 var onDOMContentLoaded = function()
@@ -345,6 +342,7 @@ i18n.set(
 	b_get:'Get from this page',
 	b_sav:'Save as "Old data"',
 	b_loa:'Load saved data',
+	b_res:'Reset stats',
 	// titles
 	t_odt:'Old data',
 	t_ndt:'New data',
@@ -353,7 +351,8 @@ i18n.set(
 	t_inc:'Include',
 	t_out:'Statistics (code)',
 	t_stb:'Status',
-	t_pre:'Preview (using "Dark background" colors)',
+	t_pre:'Evolution',
+	t_exp:'Export to forums',
 	// period
 	p_ago:'{period} ago',
 	p_now:'now',
@@ -369,7 +368,6 @@ i18n.set(
 	e_ndt:'No data',
 	e_wft:'Wrong format',
 	// status (success)
-	w_dne:'Done',
 	w_pcs:'Processing',
 	// output
 	o_tdt:'Evolution of the alliance since {oldDate} to {newDate}',
@@ -415,6 +413,7 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	b_get:'Obtener de esta página',
 	b_sav:'Guardar como "Datos antiguos"',
 	b_loa:'Cargar datos guardados',
+	b_res:'Resetear estadísticas',
 	// titles
 	t_odt:'Datos antiguos',
 	t_ndt:'Datos nuevos',
@@ -423,7 +422,8 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	t_inc:'Incluir',
 	t_out:'Estadísticas (código)',
 	t_stb:'Estado',
-	t_pre:'Previsualización (usando colores de "Fondo oscuro")',
+	t_pre:'Evolución',
+	t_exp:'Exportar para foros',
 	// period
 	p_ago:'hace {period}',
 	p_now:'ahora',
@@ -439,7 +439,6 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	e_ndt:'Sin datos',
 	e_wft:'Formato erróneo',
 	// status (success)
-	w_dne:'Terminado',
 	w_pcs:'Procesando',
 	// output
 	o_tdt:'Evolución de la alianza desde el {oldDate} hasta el {newDate}',
@@ -466,10 +465,7 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	e_oga:'Error de OGame, recargar esta página puede arreglarlo'
 })
 
-// locale [fr] francais
-//
-// thanks to Elvara
-// http://userscripts.org/topics/116649
+/*! locale [fr] francais, by Elvara, http://userscripts.org/topics/116649 */
 
 else if (/fr/.test(ogameInfo.language))i18n.set(
 {
@@ -490,6 +486,7 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	b_get:'Recharger de cette page',
 	b_sav:'Sauvegarder comme anciennes données"',
 	b_loa:'Charger anciennes données',
+	b_res:'Réinitialiser les statistiques',
 	// titles
 	t_odt:'Anciennes données',
 	t_ndt:'Nouvelles données',
@@ -498,7 +495,8 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	t_inc:'Inclure',
 	t_out:'Statistiques (code)',
 	t_stb:'Statut',
-	t_pre:'Aperçu (en utilisant l’arrière plan foncé)',
+	t_pre:'Évolution',
+	t_exp:'Exporter pour forums',
 	// period
 	p_ago:'{period} depuis le début',
 	p_now:'maintenant',
@@ -514,7 +512,6 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	e_ndt:'Pas de données',
 	e_wft:'Mauvais format',
 	// status (success)
-	w_dne:'Prêt',
 	w_pcs:'Traitement en cours',
 	// output
 	o_tdt:'Évolution de l\'alliance du {oldDate} au {newDate}',
@@ -1442,7 +1439,7 @@ Conversor.prototype =
 			).replaceAll(
 				format.selected.patterns['[size=big]'],'<span style="font-size:20px">'
 			));
-			form.setOkStatus(_('w_dne'));
+			form.hideStatus(); // status OK, no need to show it
 		}
 		catch (e)
 		{
@@ -1487,6 +1484,7 @@ Dom.prototype =
 	{
 		var a = doc.createElement('a');
 		a.setAttribute('href','javascript:void(0);');
+		a.setAttribute('class',script.name);
 		a.appendChild(doc.createTextNode(text));
 		parent.appendChild(a);
 		return a;
@@ -1501,7 +1499,8 @@ Dom.prototype =
 		parent.appendChild(b);
 		return b;
 	},
-	newCell : function () {
+	newCell : function ()
+	{
 		var td = doc.createElement('td');
 		return td;
 	},
@@ -1523,6 +1522,14 @@ Dom.prototype =
 	{
 		node.addEventListener('change', func, false);
 		node.addEventListener('keyup' , func, false);
+	},
+	cancelBubble : function (e)
+	{
+		var evt = e ? e : win.event;
+		if (evt.stopPropagation)
+			evt.stopPropagation();
+		if (evt.cancelBubble!=null)
+			evt.cancelBubble = true;
 	},
 	addCheckbox : function (parent, text, id, def, func)
 	{
@@ -1559,17 +1566,27 @@ Dom.prototype =
 		);
 		return cb;
 	},
-	makeTogleable : function (elHide,buttonContainer,bar)
+	makeTogleable : function (elHide,buttonContainer,bar,goTo)
 	{
 		var a = doc.createElement('a');
-		a.setAttribute('href','javascript:void(0);');
 		a.setAttribute('class',script.name+'_toggle_button');
-		var el = elHide;
+		var go = goTo;
+		if (go)
+		{
+			var id = script.name+(new Date()).getTime();
+			a.setAttribute('href','#'+id);
+			a.setAttribute('id',id);
+			a.addEventListener('click',dom.cancelBubble,false);
+		}
+		else
+			a.setAttribute('href','javascript:void(0);');
+		var el = (elHide.length) ? elHide : new Array(elHide);
 		var isOpen = true;
 		var open = function()
 		{
 			isOpen = true;
-			el.removeAttribute('style');
+			for (var i in el)
+				el[i].removeAttribute('style');
 			bar.setAttribute('class',bar.getAttribute('class').replace(
 				'_toggle_bar_open', '_toggle_bar_close'
 			));
@@ -1577,7 +1594,8 @@ Dom.prototype =
 		var close = function()
 		{
 			isOpen = false;
-			el.setAttribute('style','display:none;');
+			for (var i in el)
+				el[i].setAttribute('style','display:none;');
 			bar.setAttribute('class',bar.getAttribute('class').replace(
 				'_toggle_bar_close', '_toggle_bar_open'
 			));
@@ -1588,6 +1606,8 @@ Dom.prototype =
 				close();
 			else
 				open();
+			if (go)
+				a.click();
 		}
 		bar.setAttribute('class',bar.hasAttribute('class')
 			? bar.getAttribute('class')+' '+script.name+'_toggle_bar_close'
@@ -1603,41 +1623,16 @@ Dom.prototype =
 			toggle:toggle
 		}
 	},
-	addCss : addCss/*function (css)
-	{
-		var text;
-		/*if (typeof css == "object")
-		{
-			var selector, property;
-			text = '';
-			for (selector in css)
-			{
-				text = text + selector + '{';
-				for (property in css[selector])
-					text = text + property +':'+ css[selector][property] +' !important;';
-				text = text + '}';
-			}	
-		}
-		else
-		* /
-			text = css;
-		
-		var el = doc.createElement('style');
-		el.setAttribute('type','text/css');
-		
-		if (el.styleSheet)
-			el.styleSheet.cssText = text;
-		else
-			el.appendChild(doc.createTextNode(text));
-		
-		var head = doc.getElementsByTagName("head")[0];
-		head.appendChild(el);
-	}*/
+	addCss : addCss // now defined at the start for a fast change of css
 }
 
 var dom = new Dom();
 dom.addCss
 (
+	'#'+script.name+' table'+
+	'{'+
+		'width: 610px !important;'+
+	'}'+
 	'#'+script.name+' textarea'+
 	'{'+
 		'width: 350px !important;'+
@@ -1645,7 +1640,7 @@ dom.addCss
 		'margin: 0 !important;'+
 		'padding: 5px !important;'+
 	'}'+
-	'#'+script.name+' a'+
+	'#'+script.name+' a.'+script.name+
 	'{'+
 		'display: block !important;'+
 		'padding: 5px 0 0 0 !important;'+
@@ -1656,8 +1651,13 @@ dom.addCss
 	'}'+
 	'#'+script.name+' td'+
 	'{'+
+		'border-top: 2px dotted #242E38 !important;'+
 		'padding: 5px !important;'+
 		'text-align: left !important;'+
+	'}'+
+	'tr.alt #'+script.name+' td'+
+	'{'+
+		'border-top: 2px dotted #24292E !important;'+
 	'}'+
 	'#'+script.name+' td.col2'+
 	'{'+
@@ -1665,13 +1665,18 @@ dom.addCss
 	'}'+
 	'#'+script.name+' tr.tit td'+
 	'{'+
+		'border-top: none !important;'+
 		'line-height: 18px !important;'+
 	'}'+
-	'#'+script.name+'_preview'+
+	'td#'+script.name+'_preview'+
 	'{'+
-		'color: #6F9FC8 !important;'+
 		'border-top: 2px dotted #242E38 !important;'+
-		'padding-top: 15px !important;'+
+		'color: #6F9FC8 !important;'+
+	'}'+
+	'#'+script.name+'_preview div'+
+	'{'+
+		'padding-top: 5px !important;'+
+		'padding-bottom: 5px !important;'+
 	'}'+
 	'#'+script.name+'_preview a'+
 	'{'+
@@ -1686,7 +1691,7 @@ dom.addCss
 		'position : absolute !important;'+
 		'top      : 0 !important;'+
 		'right    : 0 !important;'+
-		'height   : 13px !important;'+ // 18 - 5
+		'height   : 18px !important;'+ // previosly 18 - 5
 		'width    : 20px !important;'+
 	'}'+
 	'.'+script.name+'_toggle_bar_open,' +
@@ -1716,7 +1721,7 @@ dom.addCss
 
 var Form = function (parent)
 {	
-	var tbody, tr, td, a, _this, key, index, doIt, toggleCont, toggleBar;
+	var tbody, tr, td, a, _this, key, index, doIt, toggleList, toggleCont, toggleBar, div;
 	_this = this;
 	
 	doIt = function(){_this.doIt();}
@@ -1729,13 +1734,75 @@ var Form = function (parent)
 	this.table.setAttribute('cellpadding','0');
 	this.table.setAttribute('cellspacing','0');
 	this.table.setAttribute('class','members bborder');
-	this.table.setAttribute('style','width:90%;');
 	parent.appendChild(this.table);
-	
-	// tbody
-	
 	tbody = doc.createElement('tbody');
 	this.table.appendChild(tbody);
+	
+	// sections title row
+	
+	tr = doc.createElement('tr');
+	tr.setAttribute('class','tit alt');
+	tbody.appendChild(tr);
+	
+	td = dom.newCell();
+	td.setAttribute('colspan','2');
+	td.setAttribute('class','col2');
+	toggleCont = doc.createElement('div');
+	dom.addTitle(toggleCont,_('t_inc')+':');
+	td.appendChild(toggleCont);
+	tr.appendChild(td);
+	toggleBar = tr;
+	
+	// sections content row
+	
+	tr = doc.createElement('tr');
+	tr.setAttribute('class','alt');
+	tbody.appendChild(tr);
+	
+	tr.appendChild(dom.newCell());
+	
+	td = dom.newCell();
+	td.setAttribute('class','col2');
+	this.doAlliance = dom.addCheckbox(td,_('o_tas'),'doAlliance',true,doIt);
+	this.doTop3TScore = dom.addCheckbox(td,_('o_ttt'),'doTop3TScore',false,doIt);
+	this.doTop3Score = dom.addCheckbox(td,_('o_tts'),'doTop3Score',false,doIt);
+	this.doTop3Percent = dom.addCheckbox(td,_('o_ttp'),'doTop3Percent',false,doIt);
+	this.doTop3Positions = dom.addCheckbox(td,_('o_ttg'),'doTop3Positions',false,doIt);
+	this.doTScore = dom.addCheckbox(td,_('o_trt'),'doTScore',false,doIt);
+	this.doScore = dom.addCheckbox(td,_('o_trs'),'doScore',true,doIt);
+	this.doPercent = dom.addCheckbox(td,_('o_trp'),'doPercent',true,doIt);
+	this.doPositions = dom.addCheckbox(td,_('o_trg'),'doPositions',false,doIt);
+	this.doSpecial = dom.addCheckbox(td,_('o_tsc'),'doSpecial',true,doIt);
+	this.doData = dom.addCheckbox(td,_('o_ldt'),'doData',true,doIt);
+	tr.appendChild(td);
+	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar,false);
+	
+	// preview
+	
+	tr = doc.createElement('tr');
+	tr.setAttribute('class','tit');
+	tbody.appendChild(tr);
+	
+	td = dom.newCell();
+	td.setAttribute('colspan','2');
+	td.setAttribute('class','col2');
+	toggleCont = doc.createElement('div');
+	dom.addTitle(toggleCont,_('t_pre')+':');
+	td.appendChild(toggleCont);
+	tr.appendChild(td);
+	toggleBar = tr;
+
+	tr = doc.createElement('tr');
+	tbody.appendChild(tr);
+	
+	td = dom.newCell();
+	td.setAttribute('colspan','2');
+	td.setAttribute('id',script.name+'_preview');
+	tr.appendChild(td);
+	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar,false).open();
+	td.appendChild(this.preview = doc.createElement('div'));
+	this.previewRow = tr;
+	this.setPreview();
 	
 	// old data title row
 	
@@ -1778,7 +1845,7 @@ var Form = function (parent)
 	this.oldList = dom.addTextarea(td);
 	dom.addOnChange(this.oldList, doIt, false);
 	tr.appendChild(td);
-	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar);
+	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar,true);
 	
 	// new data title row
 	
@@ -1805,6 +1872,7 @@ var Form = function (parent)
 	tbody.appendChild(tr);
 	
 	td = dom.newCell();
+
 	a = dom.addAnchor(td,_('b_sel'));
 	a.addEventListener('click', function(){_this.newList.select();}, false);
 	a = dom.addAnchor(td,_('b_del'));
@@ -1821,16 +1889,32 @@ var Form = function (parent)
 	this.newList = dom.addTextarea(td);
 	dom.addOnChange(this.newList, doIt, false);
 	tr.appendChild(td);
-	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar);
+	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar,true);
+	
+	// export title row
+	
+	tr = doc.createElement('tr');
+	tr.setAttribute('class','tit alt');
+	tbody.appendChild(tr);
+	
+	td = dom.newCell();
+	td.setAttribute('colspan','2');
+	td.setAttribute('class','col2');
+	toggleCont = doc.createElement('div');
+	dom.addTitle(toggleCont,_('t_exp')+':');
+	td.appendChild(toggleCont);
+	tr.appendChild(td);
+	toggleBar = tr;
+	toggleList = new Array();
 	
 	// forum type
 	
 	tr = doc.createElement('tr');
-	tr.setAttribute('class','alt tit');
+	tr.setAttribute('class','alt');
 	tbody.appendChild(tr);
 	
 	td = dom.newCell();
-	dom.addTitle(td,_('t_fmt')+':');
+	dom.addText(td,_('t_fmt')+':');
 	tr.appendChild(td);
 	
 	td = dom.newCell();
@@ -1847,15 +1931,16 @@ var Form = function (parent)
 	},
 	false);
 	tr.appendChild(td);
+	toggleList.push(tr);
 	
 	// color profile
 	
 	tr = doc.createElement('tr');
-	tr.setAttribute('class','tit');
+	tr.setAttribute('class','alt');
 	tbody.appendChild(tr);
 	
 	td = dom.newCell();
-	dom.addTitle(td,_('t_col')+':');
+	dom.addText(td,_('t_col')+':');
 	tr.appendChild(td);
 	
 	td = dom.newCell();
@@ -1872,67 +1957,16 @@ var Form = function (parent)
 	},
 	false);
 	tr.appendChild(td);
-	
-	// sections title row
-	
-	tr = doc.createElement('tr');
-	tr.setAttribute('class','alt');
-	tbody.appendChild(tr);
-	
-	td = dom.newCell();
-	td.setAttribute('colspan','2');
-	td.setAttribute('class','col2');
-	toggleCont = doc.createElement('div');
-	dom.addTitle(toggleCont,_('t_inc')+':');
-	td.appendChild(toggleCont);
-	tr.appendChild(td);
-	toggleBar = tr;
-	
-	// sections content row
-	
-	tr = doc.createElement('tr');
-	tr.setAttribute('class','alt');
-	tbody.appendChild(tr);
-	
-	tr.appendChild(dom.newCell());
-	
-	td = dom.newCell();
-	td.setAttribute('class','col2');
-	this.doAlliance = dom.addCheckbox(td,_('o_tas'),'doAlliance',true,doIt);
-	this.doTop3TScore = dom.addCheckbox(td,_('o_ttt'),'doTopT3Score',false,doIt);
-	this.doTop3Score = dom.addCheckbox(td,_('o_tts'),'doTop3Score',true,doIt);
-	this.doTop3Percent = dom.addCheckbox(td,_('o_ttp'),'doTop3Percent',true,doIt);
-	this.doTop3Positions = dom.addCheckbox(td,_('o_ttg'),'doTop3Positions',false,doIt);
-	this.doTScore = dom.addCheckbox(td,_('o_trt'),'doTScore',false,doIt);
-	this.doScore = dom.addCheckbox(td,_('o_trs'),'doScore',true,doIt);
-	this.doPercent = dom.addCheckbox(td,_('o_trp'),'doPercent',true,doIt);
-	this.doPositions = dom.addCheckbox(td,_('o_trg'),'doPositions',false,doIt);
-	this.doSpecial = dom.addCheckbox(td,_('o_tsc'),'doSpecial',true,doIt);
-	this.doData = dom.addCheckbox(td,_('o_ldt'),'doData',true,doIt);
-	tr.appendChild(td);
-	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar);
+	toggleList.push(tr);
 	
 	// forum code title row
 	
 	tr = doc.createElement('tr');
-	tr.setAttribute('class','tit');
+	tr.setAttribute('class','alt');
 	tbody.appendChild(tr);
 	
 	td = dom.newCell();
-	td.setAttribute('colspan','2');
-	td.setAttribute('class','col2');
-	toggleCont = doc.createElement('div');
-	dom.addTitle(toggleCont,_('t_out')+':');
-	td.appendChild(toggleCont);
-	tr.appendChild(td);
-	toggleBar = tr;
-	
-	// forum code content row
-	
-	tr = doc.createElement('tr');
-	tbody.appendChild(tr);
-	
-	td = dom.newCell();
+	dom.addText(td,_('t_out')+':');
 	a = dom.addAnchor(td,_('b_sel'));
 	a.addEventListener('click', function(){_this.stats.select();}, false);
 	tr.appendChild(td);
@@ -1943,11 +1977,29 @@ var Form = function (parent)
 	this.stats.setAttribute('readonly','readonly');
 	this.stats.addEventListener('click', function(){_this.stats.select();}, false);
 	tr.appendChild(td);
-	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar).open();
+	toggleList.push(tr);
+	
+	if (useToggles) dom.makeTogleable(toggleList,toggleCont,toggleBar,true);
+	
+	// reset data line
+	
+	tr = doc.createElement('tr');
+	tr.setAttribute('class','tit');
+	tbody.appendChild(tr);
+	
+	td = dom.newCell();
+	td.setAttribute('class','col2');
+	td.setAttribute('align','right');
+	td.setAttribute('colspan','2');
+	tr.appendChild(td);
+	
+	a = dom.addAnchor(td,_('b_res'));
+	a.setAttribute('class','action btn_blue float_right');
+	a.addEventListener('click', function(){_this.resetData();}, false);
 	
 	// status line
 	
-	tr = doc.createElement('tr');
+	this.statusRow = (tr = doc.createElement('tr'));
 	tr.setAttribute('class','alt tit');
 	tbody.appendChild(tr);
 	
@@ -1960,32 +2012,7 @@ var Form = function (parent)
 	this.statusText = dom.addText(td,'');
 	tr.appendChild(td);
 	
-	// preview
-	
-	tr = doc.createElement('tr');
-	tr.setAttribute('class','tit');
-	tbody.appendChild(tr);
-	
-	td = dom.newCell();
-	td.setAttribute('colspan','2');
-	td.setAttribute('class','col2');
-	toggleCont = doc.createElement('div');
-	dom.addTitle(toggleCont,_('t_pre')+':');
-	td.appendChild(toggleCont);
-	tr.appendChild(td);
-	toggleBar = tr;
-	
-	tr = doc.createElement('tr');
-	tbody.appendChild(tr);
-	
-	td = dom.newCell();
-	td.setAttribute('colspan','2');
-	td.setAttribute('id',script.name+'_preview');
-	tr.appendChild(td);
-	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar).open();
-	this.preview = td;
-	this.previewRow = tr;
-	this.setPreview();
+	this.hideStatus();
 }
 
 Form.prototype =
@@ -2013,6 +2040,12 @@ Form.prototype =
 		else
 			this.newList.value='';
 		this.doIt();
+	},
+	resetData : function ()
+	{
+		this.setNewListFromPage();
+		this.setOldList(this.currentPageData);
+		storage.set('oldData',this.currentPageData);
 	},
 	setStats : function (text)
 	{
@@ -2109,12 +2142,21 @@ Form.prototype =
 		this.setNewList(this.currentPageData);
 		return true;
 	},
+	hideStatus : function ()
+	{
+		this.statusRow.setAttribute('style','display:none');
+	},
+	showStatus : function ()
+	{
+		this.statusRow.setAttribute('style','');
+	},
 	setErrorStatus : function (text)
 	{
 		this.statusText.nodeValue = '';
 		this.statusLine.setAttribute('class','overmark');
 		if(arguments.length>0)
 			this.statusText.nodeValue = text;
+		this.showStatus();
 	},
 	setOkStatus : function (text)
 	{
@@ -2122,6 +2164,7 @@ Form.prototype =
 		this.statusLine.setAttribute('class','undermark');
 		if(arguments.length>0)
 			this.statusText.nodeValue = text;
+		this.showStatus();
 	},
 	setTitle : function (oldNew, html, success)
 	{
