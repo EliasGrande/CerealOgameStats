@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.4
+// @version        2.5
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -170,6 +170,7 @@ var OgameInfo = function()
 	this.getMeta("timestamp"  ,"ogame-timestamp"  ,null);
 	this.getMeta("universe"   ,"ogame-universe"   ,null);
 	this.getMeta("alliance_id","ogame-alliance-id",null);
+	this.getMeta("player_name","ogame-player-name","");
 }
 
 OgameInfo.prototype =
@@ -1427,6 +1428,13 @@ Conversor.prototype =
 			include.data = false;
 			format.select(format.formats.length-1);
 			colors.select(0);
+			// DIRTY DIRTY FIX >>
+			var player_high_search = '[color={nameColor}][b]{name}[/b][/color]'.replaceMap(
+				format.selected.patterns).replaceAll(
+				'{name}',ogameInfo.player_name);
+			var player_high_replace = player_high_search.replaceAll('{nameColor}','#FF0');
+			// DIRTY DIRTY FIX <<
+			player_high_search = player_high_search.replaceMap(colors.selected);
 			form.setPreview(format.format(
 				include,
 				this.allyInfo,
@@ -1438,7 +1446,11 @@ Conversor.prototype =
 				format.selected.patterns['[size=small]'],'<span>'
 			).replaceAll(
 				format.selected.patterns['[size=big]'],'<span style="font-size:20px">'
+			// DIRTY DIRTY FIX >>
+			).replaceAll(
+				player_high_search, player_high_replace
 			));
+			// DIRTY DIRTY FIX <<
 			form.hideStatus(); // status OK, no need to show it
 		}
 		catch (e)
