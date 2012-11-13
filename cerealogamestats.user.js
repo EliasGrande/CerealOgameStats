@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.5.2
+// @version        2.5.4
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -588,9 +588,9 @@ else if (/tr/.test(ogameInfo.language))i18n.set(
 	// Durum (başarı)
 	w_pcs: 'İşleniyor',
 	// Çıktı
-	o_tdt: '{oldDate} {newDate} bu yana ittifak gelişimi',
+	o_tdt: 'Gelişim Zaman Aralığı {oldDate} - {newDate} ',
 	o_tet: 'Geçen zaman',
-	o_tas: 'İttifak Özeti',
+	o_tas: 'İttifak Bilgisi',
 	o_ptl: 'Toplam Puan',
 	o_ppm: 'Üye Başına Ortalama Puan',
 	o_ttt: 'Toplam Puana Göre En İyi 3',
@@ -607,9 +607,80 @@ else if (/tr/.test(ogameInfo.language))i18n.set(
 	o_bdg: 'Yasaklı',
 	o_bdq: 'Yasağı kaldırılmış',
 	o_ldt: 'Son Veri (Gelecekteki İstatistikler İçin)',
-	o_abt: '{link} ile Gerçekleştirilen İstatistikler',
+	o_abt: '{link} tarafından gerçekleştirilen istatistikler',
 	// OGame Hatası
-	e_oga: 'OGame Hatası, Düzeltmek İçin Sayfayı Tekrar Yükleyin',
+	e_oga: 'OGame Hatası, Düzeltmek İçin Sayfayı Tekrar Yükleyin'
+})
+
+/*! locale [pt] português, by wacker faxes, http://userscripts.org/topics/118886 */
+
+else if (/pt|br/.test(ogameInfo.language))i18n.set(
+{
+	// separators
+	s_dec: ".",
+	s_tho: ",",
+	s_dat: "/",
+	s_tim: ":",
+	// abb time units
+	a_wee: "s",
+	a_day: "d",
+	a_hou: "h",
+	a_min: "m",
+	a_sec: "s",
+	// buttons
+	b_sel:'Seleccionar',
+	b_del:'Apagar',
+	b_get:'Get from this page',
+	b_sav:'Gravar como "Informação antiga"',
+	b_loa:'Carregar informação gravada',
+	b_res:'Recomeçar',
+	// titles
+	t_odt:'Informação antiga',
+	t_ndt:'Informação nova',
+	t_fmt:'Formato',
+	t_col:'Cores',
+	t_inc:'Incluir',
+	t_out:'Estatisticas (codigo)',
+	t_stb:'Estado',
+	t_pre:'Evolução',
+	t_exp:'Exportar para forums',
+	// period
+	p_ago:'{period} ago',
+	p_now:'agora',
+	// colors
+	c_dbg:'Fundo escuro',
+	c_lbg:'Fundo claro',
+	// status (errors)
+	e_nod:'Sem informação antiga',
+	e_nnd:'Sem informação nova',
+	e_odf:'A informação antiga tem formato errado',
+	e_ndf:'A informação nova tem formato erradot',
+	e_unk:'Erro insperado',
+	e_ndt:'sem informação',
+	e_wft:'Formato errado',
+	// status (success)
+	w_pcs:'Processar',
+	// output
+	o_tdt:'Evolução da aliança desde {oldDate} até {newDate}',
+	o_tet:'Tempo decorrido',
+	o_tas:'Sumario da aliança',
+	o_ptl:'Pontos totais',
+	o_ppm:'Pontos por membro',
+	o_ttt:'Top 3 por pontos totais',
+	o_tts:'Top 3 por pontos ganhos',
+	o_ttp:'Top 3 por percentagem ganha',
+	o_ttg:'Top 3 por posições ganhas',
+	o_trt:'Classificação total de pontos',
+	o_trs:'Classificação pontos ganhos',
+	o_trp:'Classificação percentagem ganha',
+	o_trg:'Classificação posições ganhos',
+	o_tsc:'Casos especiais',
+	o_cnm:'novo membro',
+	o_cla:'deixou aliança',
+	o_bdg:'banido',
+	o_bdq:'ex-banido',
+	o_ldt:'Ultima data (para futura estatistica)',
+	o_abt:'Estatisticas realizadas por {link}'
 });
 
 // colors
