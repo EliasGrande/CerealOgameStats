@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.5.4
+// @version        2.5.5
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -630,7 +630,7 @@ else if (/pt|br/.test(ogameInfo.language))i18n.set(
 	// buttons
 	b_sel:'Seleccionar',
 	b_del:'Apagar',
-	b_get:'Get from this page',
+	b_get:'Obter desta página',
 	b_sav:'Gravar como "Informação antiga"',
 	b_loa:'Carregar informação gravada',
 	b_res:'Recomeçar',
@@ -640,12 +640,12 @@ else if (/pt|br/.test(ogameInfo.language))i18n.set(
 	t_fmt:'Formato',
 	t_col:'Cores',
 	t_inc:'Incluir',
-	t_out:'Estatisticas (codigo)',
+	t_out:'Estatísticas (código)',
 	t_stb:'Estado',
 	t_pre:'Evolução',
-	t_exp:'Exportar para forums',
+	t_exp:'Exportar para foruns',
 	// period
-	p_ago:'{period} ago',
+	p_ago:'{period} atrás',
 	p_now:'agora',
 	// colors
 	c_dbg:'Fundo escuro',
@@ -654,9 +654,9 @@ else if (/pt|br/.test(ogameInfo.language))i18n.set(
 	e_nod:'Sem informação antiga',
 	e_nnd:'Sem informação nova',
 	e_odf:'A informação antiga tem formato errado',
-	e_ndf:'A informação nova tem formato erradot',
-	e_unk:'Erro insperado',
-	e_ndt:'sem informação',
+	e_ndf:'A informação nova tem formato errado',
+	e_unk:'Erro inesperado',
+	e_ndt:'Sem informação',
 	e_wft:'Formato errado',
 	// status (success)
 	w_pcs:'Processar',
@@ -679,8 +679,8 @@ else if (/pt|br/.test(ogameInfo.language))i18n.set(
 	o_cla:'deixou aliança',
 	o_bdg:'banido',
 	o_bdq:'ex-banido',
-	o_ldt:'Ultima data (para futura estatistica)',
-	o_abt:'Estatisticas realizadas por {link}'
+	o_ldt:'Ultima data (para futura estatística)',
+	o_abt:'Estatísticas realizadas por {link}'
 });
 
 // colors
