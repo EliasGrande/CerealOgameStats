@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.5.5
+// @version        2.5.6
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -485,7 +485,7 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	b_sel:'Sélectionner',
 	b_del:'Effacer',
 	b_get:'Recharger de cette page',
-	b_sav:'Sauvegarder comme anciennes données"',
+	b_sav:'Sauvegarder comme "Anciennes données"',
 	b_loa:'Charger anciennes données',
 	b_res:'Réinitialiser les statistiques',
 	// titles
@@ -530,7 +530,7 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	o_trg:'Rang par places gagnées',
 	o_tsc:'Cas spéciaux',
 	o_cnm:'Nouveaux Membres',
-	o_cla:'A quitter l\'alliance',
+	o_cla:'A quitté l\'alliance',
 	o_bdg:'Banni',
 	o_bdq:'Débanni',
 	o_ldt:'Dernières données (pour statistiques futures)',
