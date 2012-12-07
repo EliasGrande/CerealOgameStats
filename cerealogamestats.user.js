@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.5.6
+// @version        2.5.9
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -33,20 +33,13 @@
 */
 (function(){
 
-// crossbrowser unsafeWindow & document
+// crossbrowser unsafeWindow & document & jQuery=$
 
-var win = window, doc;
-
-try
-{
-	if (unsafeWindow)
-	{
-		win = unsafeWindow;
-	}
-}
+var win = window, doc, $;
+try{if (unsafeWindow) win = unsafeWindow;}
 catch(e){}
-
 doc = win.document;
+$ = win.jQuery;
 
 // backup memberlist before the "pretty-titles script" delete the titles
 
@@ -160,6 +153,7 @@ var onDOMContentLoaded = function()
 //   START onDOMContentLoaded()   //
 //                                //
 ////////////////////////////////////
+$ = win.jQuery; // tampermonkey fix
 
 // ogame info
 
@@ -323,7 +317,6 @@ var _ = function (text)
 }
 
 // default locale [en] english
-
 i18n.set(
 {	
 	// separators
@@ -396,7 +389,6 @@ i18n.set(
 });
 
 // locale [es] español
-
 if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 {
 	// separators
@@ -467,7 +459,6 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 })
 
 /*! locale [fr] francais, by Elvara, http://userscripts.org/topics/116649 */
-
 else if (/fr/.test(ogameInfo.language))i18n.set(
 {
 	// separators
@@ -540,7 +531,6 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 })
 
 /*! locale [tr] türk, by Joaquin09, http://userscripts.org/topics/118658 */
-
 else if (/tr/.test(ogameInfo.language))i18n.set(
 {
 	// Ayırıcılar
@@ -613,7 +603,6 @@ else if (/tr/.test(ogameInfo.language))i18n.set(
 })
 
 /*! locale [pt] português, by wacker faxes, http://userscripts.org/topics/118886 */
-
 else if (/pt|br/.test(ogameInfo.language))i18n.set(
 {
 	// separators
@@ -681,6 +670,78 @@ else if (/pt|br/.test(ogameInfo.language))i18n.set(
 	o_bdq:'ex-banido',
 	o_ldt:'Ultima data (para futura estatística)',
 	o_abt:'Estatísticas realizadas por {link}'
+})
+
+/*! locale [it] italiano, by adyr, http://userscripts.org/topics/119582 */
+else if (/it/.test(ogameInfo.language))i18n.set(
+{
+	// separators
+	s_dec: ".",
+	s_tho: ",",
+	s_dat: "/",
+	s_tim: ":",
+	// abb time units
+	a_wee: "s",
+	a_day: "g",
+	a_hou: "o",
+	a_min: "m",
+	a_sec: "s",
+	// buttons
+	b_sel:'Seleziona',
+	b_del:'Cancella',
+	b_get:'Copia dalla pagina',
+	b_sav:'Salva come "Dati vecchi"',
+	b_loa:'Carica dati salvati',
+	b_res:'Resetta le statistiche',
+	// titles
+	t_odt:'Dati vecchi',
+	t_ndt:'Nuovi dati',
+	t_fmt:'Formato',
+	t_col:'Colori',
+	t_inc:'Includi',
+	t_out:'Statistiche (codice)',
+	t_stb:'Status',
+	t_pre:'Progresso',
+	t_exp:'Esporta per il forum',
+	// period
+	p_ago:'{period} fa',
+	p_now:'ora',
+	// colors
+	c_dbg:'Sfondo scuro',
+	c_lbg:'Sfondo chiaro',
+	// status (errors)
+	e_nod:'Nessun dato vecchio',
+	e_nnd:'Nessun dato nuovo',
+	e_odf:'I dati vecchi hanno un formato sbagliato',
+	e_ndf:'I dati nuovi hanno un formato sbagliato',
+	e_unk:'Errore generico',
+	e_ndt:'Nessu dato',
+	e_wft:'Formato errato',
+	// status (success)
+	w_pcs:'In elaborazione',
+	// output
+	o_tdt:'Progresso alleanza da {oldDate} a {newDate}',
+	o_tet:'Tempo trascorso',
+	o_tas:'Sommario alleanza',
+	o_ptl:'Punti totali',
+	o_ppm:'Punti per Player',
+	o_ttt:'Top 3 punteggio totale',
+	o_tts:'Top 3 punti guadagnati',
+	o_ttp:'Top 3 percentuale punti guadagnati',
+	o_ttg:'Top 3 posizioni guadagnate',
+	o_trt:'Classifica punteggio totale',
+	o_trs:'Classifica punti guadagnati',
+	o_trp:'Classifica percentuale punti guadagnati',
+	o_trg:'Classifica posizioni guadagnate',
+	o_tsc:'Casi speciali',
+	o_cnm:'nuovo alleato',
+	o_cla:'ha lasciato l alleanza',
+	o_bdg:'bannato',
+	o_bdq:'sbannato',
+	o_ldt:'Dati salvati (per statistiche future)',
+	o_abt:'Statistiche create da {link}',
+	// OGame Error
+	e_oga:'Errore di Ogame, ricarica la pagina'
 });
 
 // colors
@@ -1779,7 +1840,52 @@ Dom.prototype =
 			toggle:toggle
 		}
 	},
-	addCss : addCss // now defined at the start for a fast change of css
+	addCss : addCss, // now defined at the start for a fast change of css
+	ogameDropDown : function (select)
+	{
+		var i, j, oldDD = $('.dropdown.dropdownList').get(), newDD, isNew, id, _change, _info;
+		try {
+			select.ogameDropDown();
+		}
+		catch (e) {
+			select.css('visibility','visible');
+			return false;
+		}
+		_info = {
+			select : select
+		}
+		_change = function()
+		{
+			var val, text;
+			val  = _info.select.val();
+			text = _info.select.find('[value="'+val+'"]').text();
+			_info.dropdown.attr('data-value',val).text(text);
+			//win.console.log(val,text);
+		}
+		newDD = $('.dropdown.dropdownList').get();
+		for (i=0;i<oldDD.length;i++) oldDD[i] = $(oldDD[i]);
+		for (i=0;i<newDD.length;i++)
+		{
+			newDD[i] = $(newDD[i]);
+			id = newDD[i].attr('id');
+			isNew = true;
+			for (j=0;j<oldDD.length;j++)
+				if (oldDD[j].attr('id')==id)
+				{
+					isNew = false;
+					break;
+				}
+			if (isNew)
+			{
+				_info.dropdown = $('.dropdown [rel="'+id+'"]');
+				//_info.dropdownList = newDD[i];
+				_change();
+				select.change(_change);
+				break;
+			}
+		}
+		return true;
+	}
 }
 
 var dom = new Dom();
@@ -2080,14 +2186,14 @@ var Form = function (parent)
 		dom.addOption(format.formats[key].name, key, this.selectFormat);
 	index = storage.get('selectFormat');
 	this.selectFormat.selectedIndex = (index==null) ? 0 : parseInt(index);
-	this.selectFormat.addEventListener('change', function()
+	$(this.selectFormat).change(function()
 	{
 		storage.set('selectFormat', _this.selectFormat.selectedIndex+'');
 		doIt();
-	},
-	false);
+	});
 	tr.appendChild(td);
 	toggleList.push(tr);
+	dom.ogameDropDown($(this.selectFormat));
 	
 	// color profile
 	
@@ -2106,14 +2212,14 @@ var Form = function (parent)
 		dom.addOption(colors.names[key], key, this.selectColors);
 	index = storage.get('selectColors');
 	this.selectColors.selectedIndex = (index==null) ? 0 : parseInt(index);
-	this.selectColors.addEventListener('change', function()
+	$(this.selectColors).change(function()
 	{
 		storage.set('selectColors', _this.selectColors.selectedIndex+'');
 		doIt();
-	},
-	false);
+	});
 	tr.appendChild(td);
 	toggleList.push(tr);
+	dom.ogameDropDown($(this.selectColors));
 	
 	// forum code title row
 	
