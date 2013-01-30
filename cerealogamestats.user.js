@@ -5,7 +5,7 @@
 // @downloadURL    https://userscripts.org/scripts/source/134405.user.js
 // @updateURL      https://userscripts.org/scripts/source/134405.meta.js
 // @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.5.9
+// @version        2.6.1
 // @include        *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*!
@@ -39,7 +39,6 @@ var win = window, doc, $;
 try{if (unsafeWindow) win = unsafeWindow;}
 catch(e){}
 doc = win.document;
-$ = win.jQuery;
 
 // backup memberlist before the "pretty-titles script" delete the titles
 
@@ -153,7 +152,6 @@ var onDOMContentLoaded = function()
 //   START onDOMContentLoaded()   //
 //                                //
 ////////////////////////////////////
-$ = win.jQuery; // tampermonkey fix
 
 // ogame info
 
@@ -382,7 +380,7 @@ i18n.set(
 	o_cla:'leaves the alliance',
 	o_bdg:'banned',
 	o_bdq:'unbanned',
-	o_ldt:'Latest data (for future statistics)',
+//	o_ldt:'Latest data (for future statistics)',
 	o_abt:'Statistics performed with {link}',
 	// OGame Error
 	e_oga:'OGame Error, reload this page may fix it'
@@ -452,7 +450,7 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	o_cla:'abandona la alianza',
 	o_bdg:'baneado',
 	o_bdq:'desbaneado',
-	o_ldt:'Datos más recientes (para futuras estadísticas)',
+//	o_ldt:'Datos más recientes (para futuras estadísticas)',
 	o_abt:'Estadísticas realizadas con {link}',
 	// OGame Error
 	e_oga:'Error de OGame, recargar esta página puede arreglarlo'
@@ -524,7 +522,7 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	o_cla:'A quitté l\'alliance',
 	o_bdg:'Banni',
 	o_bdq:'Débanni',
-	o_ldt:'Dernières données (pour statistiques futures)',
+//	o_ldt:'Dernières données (pour statistiques futures)',
 	o_abt:'Statistiques obtenues avec {link}',
 	// OGame Error
 	e_oga:'Erreur OGame, recharger la page peut régler le problème'
@@ -596,7 +594,7 @@ else if (/tr/.test(ogameInfo.language))i18n.set(
 	o_cla: 'İttifaktan ayrılır',
 	o_bdg: 'Yasaklı',
 	o_bdq: 'Yasağı kaldırılmış',
-	o_ldt: 'Son Veri (Gelecekteki İstatistikler İçin)',
+//	o_ldt: 'Son Veri (Gelecekteki İstatistikler İçin)',
 	o_abt: '{link} tarafından gerçekleştirilen istatistikler',
 	// OGame Hatası
 	e_oga: 'OGame Hatası, Düzeltmek İçin Sayfayı Tekrar Yükleyin'
@@ -668,7 +666,7 @@ else if (/pt|br/.test(ogameInfo.language))i18n.set(
 	o_cla:'deixou aliança',
 	o_bdg:'banido',
 	o_bdq:'ex-banido',
-	o_ldt:'Ultima data (para futura estatística)',
+//	o_ldt:'Ultima data (para futura estatística)',
 	o_abt:'Estatísticas realizadas por {link}'
 })
 
@@ -738,7 +736,7 @@ else if (/it/.test(ogameInfo.language))i18n.set(
 	o_cla:'ha lasciato l alleanza',
 	o_bdg:'bannato',
 	o_bdq:'sbannato',
-	o_ldt:'Dati salvati (per statistiche future)',
+//	o_ldt:'Dati salvati (per statistiche future)',
 	o_abt:'Statistiche create da {link}',
 	// OGame Error
 	e_oga:'Errore di Ogame, ricarica la pagina'
@@ -826,8 +824,9 @@ var Format = function()
 		'{decreases}' : "\u00AB", // «
 		'{remains}'   : "\u007E", // ~
 		'{remainsNo}' : "\u00D8", // Ø
-		'{up}'        : "\u2191", // ?
-		'{down}'      : "\u2193", // ?
+		'{up}'        : "\u2191", // ↑
+		'{down}'      : "\u2193", // ↓
+		'{infinity}'  : "\u8734;", // ∞
 		'{rank}'      : '#',
 		'{\\'         : '{',
 		'\\}'         : '}'
@@ -1117,7 +1116,7 @@ Format.prototype =
 	format : function (
 		include, allyInfo, membersInfo,
 		to0MembersInfo, from0MembersInfo,
-		scriptData
+		oldData, newData
 	)
 	{
 		var output = this.header(allyInfo);
@@ -1259,9 +1258,25 @@ Format.prototype =
 				from0MembersInfo
 			);
 		
-		if (include.data)
-			output = output + this.layout.scriptData.replace(
-				'{scriptDataTitle}', _('o_ldt'));
+		var data;
+		
+		if (include.oldData)
+		{
+			data = JSON.parse(oldData);
+			output = output + this.layout.scriptData.replaceMap({
+				'{scriptDataTitle}' : _('t_odt') + ' - ' + data.strDate + ' (' + data.strTime + ')',
+				'{scriptData}'      : '{oldData}'
+			});
+		}
+		
+		if (include.newData)
+		{
+			data = JSON.parse(newData);
+			output = output + this.layout.scriptData.replaceMap({
+				'{scriptDataTitle}' : _('t_ndt') + ' - ' + data.strDate + ' (' + data.strTime + ')',
+				'{scriptData}'      : '{newData}'
+			});
+		}
 		
 		output = output + this.layout.scriptLink;
 		output = output.replaceMap(
@@ -1274,8 +1289,16 @@ Format.prototype =
 		}).replaceMap(
 			this.lastReplace
 		).replace(
-			'{scriptData}',
-			scriptData.replaceMap({
+			'{oldData}',
+			oldData.replaceMap({
+				'<' : "\\u003C",
+				'>' : "\\u003E",
+				'[' : "\\u005B",
+				']' : "\\u005D"
+			})
+		).replace(
+			'{newData}',
+			newData.replaceMap({
 				'<' : "\\u003C",
 				'>' : "\\u003E",
 				'[' : "\\u005B",
@@ -1328,8 +1351,9 @@ format.add(
 		'{decreases}'  : '&laquo;',
 		'{remains}'    : '&sim;',
 		'{remainsNo}'  : '&Oslash;', // Ø
-		'{up}'         : "&uarr;", // ?
-		'{down}'       : "&darr;", // ?
+		'{up}'         : "&uarr;", // ↑
+		'{down}'       : "&darr;", // ↓
+		'{infinity}'   : "&#8734;", // ∞
 		'[size=big]'   : '<span style="font-size: 140%;">',
 		'[size=small]' : '<span style="font-size: 80%;">',
 		'[/size]'      : '</span>',
@@ -1410,24 +1434,13 @@ Conversor.prototype =
 			for (oldKey = 0; oldKey < oldEnd; oldKey++)
 			{
 				oldInfo = this.oldMembersInfo[oldKey];
-				if (
-					(oldInfo.noPartner)&&
-					(
-						(
-							(oldInfo.id >= 0)&&
-							(oldInfo.id == newInfo.id)
-						)||
-						(oldInfo.name  == newInfo.name)||
-						(oldInfo.coord == newInfo.coord)
-					)
-				)
-					break;
+				if ((oldInfo.noPartner)&&(oldInfo.id == newInfo.id)) break;
 			}
 			if (oldKey != oldEnd)
 			{
 				this.oldMembersInfo[oldKey].noPartner = false;
 				this.newMembersInfo[newKey].noPartner = false;
-				if ((newInfo.score == 0)||(newInfo.pos == 0))
+				if (newInfo.pos == 0)
 				{
 					this.to0MembersInfo.push({
 						name   : newInfo.name,
@@ -1435,7 +1448,7 @@ Conversor.prototype =
 						reason : _('o_bdg')
 					});
 				}
-				else if ((oldInfo.score == 0)||(oldInfo.pos == 0))
+				else if (oldInfo.pos == 0)
 				{
 					this.from0MembersInfo.push({
 						name   : newInfo.name,
@@ -1445,7 +1458,42 @@ Conversor.prototype =
 				}
 				else
 				{
-					diff = Calc.diffScore(oldInfo.score, newInfo.score);
+					var diffScore, diffPercent, fDiffScore, fDiffPercent;
+					if (oldInfo.score == 0)
+					{
+						if (newInfo.score == 0)
+						{
+							diffScore = 0;
+							diffPercent = 0;
+							fDiffScore = '+0';
+							fDiffPercent = '+'+i18n.number('0.00');
+						}
+						else
+						{
+							diffScore = newInfo.score;
+							diffPercent = (1/0);
+							fDiffScore = '+' + i18n.number(newInfo.score);
+							fDiffPercent = '+{infinity}';
+						}
+					}
+					else if (newInfo.score == 0)
+					{
+						diffScore = (-1)*oldInfo.score;
+						diffPercent = (-100);
+						fDiffScore = i18n.number(diffScore);
+						fDiffPercent = i18n.number('-100.00')
+					}
+					else
+					{
+						diff = Calc.diffScore(oldInfo.score, newInfo.score);
+						diffScore = diff.score;
+						diffPercent = diff.percent;
+						fDiffScore = ((diffScore<0)?'':'+')+
+							i18n.number(diffScore.toFixed());
+						fDiffPercent = ((diffPercent<0)?'':'+')+
+							i18n.number(diffPercent.toFixed(2));
+					}
+					
 					mergeInfo = {
 						name        : newInfo.name,
 						oldScore    : oldInfo.score,
@@ -1453,8 +1501,8 @@ Conversor.prototype =
 						oldPos      : oldInfo.pos,
 						newPos      : newInfo.pos,
 						diffPos     : oldInfo.pos-newInfo.pos,
-						diffScore   : diff.score,
-						diffPercent : diff.percent
+						diffScore   : diffScore,
+						diffPercent : diffPercent
 					};
 					mergeInfo.formatted = {
 						oldScore  : i18n.number(mergeInfo.oldScore),
@@ -1463,10 +1511,8 @@ Conversor.prototype =
 						newPos    : i18n.number(mergeInfo.newPos.toFixed()),
 						diffPos   : ((mergeInfo.diffPos<0)?'':'+')+
 							i18n.number(mergeInfo.diffPos.toFixed()),
-						diffScore : ((mergeInfo.diffScore<0)?'':'+')+
-							i18n.number(mergeInfo.diffScore.toFixed()),
-						diffPercent : ((mergeInfo.diffPercent<0)?'':'+')+
-							i18n.number(mergeInfo.diffPercent.toFixed(2))
+						diffScore : fDiffScore,
+						diffPercent : fDiffPercent
 					}
 					this.membersInfo.push(mergeInfo);
 				}
@@ -1620,7 +1666,8 @@ Conversor.prototype =
 				percent       : form.doPercent.checked,
 				positions     : form.doPositions.checked,
 				special       : form.doSpecial.checked,
-				data          : form.doData.checked
+				oldData       : form.doOldData.checked,
+				newData       : form.doNewData.checked
 			};
 			form.setStats(format.format(
 				include,
@@ -1628,9 +1675,11 @@ Conversor.prototype =
 				this.membersInfo,
 				this.to0MembersInfo,
 				this.from0MembersInfo,
+				form.oldList.value.trim(),
 				form.newList.value.trim()
 			));
-			include.data = false;
+			include.oldData = false;
+			include.newData = false;
 			format.select(format.formats.length-1);
 			colors.select(0);
 			// DIRTY DIRTY FIX >>
@@ -1646,6 +1695,7 @@ Conversor.prototype =
 				this.membersInfo,
 				this.to0MembersInfo,
 				this.from0MembersInfo,
+				form.oldList.value.trim(),
 				form.newList.value.trim()
 			).replaceAll(
 				format.selected.patterns['[size=small]'],'<span>'
@@ -1666,6 +1716,15 @@ Conversor.prototype =
 }
 
 var conversor = new Conversor();
+
+var uniqid =
+{
+	num: (new Date()).getTime(),
+	get: function()
+	{
+		return script.name+(this.num++);
+	}
+}
 
 // DOM
 
@@ -1788,15 +1847,6 @@ Dom.prototype =
 		var a = doc.createElement('a');
 		a.setAttribute('class',script.name+'_toggle_button');
 		var go = goTo;
-		if (go)
-		{
-			var id = script.name+(new Date()).getTime();
-			a.setAttribute('href','#'+id);
-			a.setAttribute('id',id);
-			a.addEventListener('click',dom.cancelBubble,false);
-		}
-		else
-			a.setAttribute('href','javascript:void(0);');
 		var el = (elHide.length) ? elHide : new Array(elHide);
 		var isOpen = true;
 		var open = function()
@@ -1823,14 +1873,33 @@ Dom.prototype =
 				close();
 			else
 				open();
-			if (go)
-				a.click();
 		}
+		if (go)
+		{
+			var id = uniqid.get();
+			a.setAttribute('href','#'+id);
+			a.setAttribute('id',id);
+		}
+		else
+			a.setAttribute('href','javascript:void(0);');
+		a.addEventListener('click',
+			function(e)
+			{
+				dom.cancelBubble(e);
+				toggle();
+			},
+			false
+		);
 		bar.setAttribute('class',bar.hasAttribute('class')
 			? bar.getAttribute('class')+' '+script.name+'_toggle_bar_close'
 			: script.name+'_toggle_bar_close'
 		);
-		bar.addEventListener('click',toggle,false);
+		bar.addEventListener('click',
+			function(e)
+			{
+				a.click();
+			}
+			,false);
 		toggle();
 		buttonContainer.setAttribute('style','position:relative;');
 		buttonContainer.appendChild(a);
@@ -1860,7 +1929,6 @@ Dom.prototype =
 			val  = _info.select.val();
 			text = _info.select.find('[value="'+val+'"]').text();
 			_info.dropdown.attr('data-value',val).text(text);
-			//win.console.log(val,text);
 		}
 		newDD = $('.dropdown.dropdownList').get();
 		for (i=0;i<oldDD.length;i++) oldDD[i] = $(oldDD[i]);
@@ -2035,7 +2103,8 @@ var Form = function (parent)
 	this.doPercent = dom.addCheckbox(td,_('o_trp'),'doPercent',true,doIt);
 	this.doPositions = dom.addCheckbox(td,_('o_trg'),'doPositions',false,doIt);
 	this.doSpecial = dom.addCheckbox(td,_('o_tsc'),'doSpecial',true,doIt);
-	this.doData = dom.addCheckbox(td,_('o_ldt'),'doData',true,doIt);
+	this.doOldData = dom.addCheckbox(td,'[spoiler] '+_('t_odt'),'doOldData',false,doIt);
+	this.doNewData = dom.addCheckbox(td,'[spoiler] '+_('t_ndt'),'doNewData',true,doIt);
 	tr.appendChild(td);
 	if (useToggles) dom.makeTogleable(tr,toggleCont,toggleBar,false);
 	
@@ -2608,6 +2677,23 @@ script.init();
 //////////////////////////////////
 }
 
+var initJQuery = function()
+{
+	try
+	{
+		$ = win.jQuery;
+		if (typeof($)=='undefined') throw 0;
+		if (typeof($.fn.ogameDropDown)=='undefined') throw 0;
+		
+		// init script
+		onDOMContentLoaded();
+	}
+	catch(e)
+	{
+		setTimeout(initJQuery,50);
+	}
+}
+
 // Dean Edwards/Matthias Miller/John Resig
 var init = function()
 {
@@ -2621,7 +2707,7 @@ var init = function()
 	if (_timer) clearInterval(_timer);
 
 	// do stuff
-	onDOMContentLoaded();
+	initJQuery();
 };
 
 /* for Mozilla/Opera9 */
