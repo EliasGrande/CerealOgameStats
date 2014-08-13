@@ -1,0 +1,66 @@
+{
+	// separators
+	s_dec: ".",
+	s_tho: ",",
+	s_dat: "/",
+	s_tim: ":",
+	// abb time units
+	a_wee: "s",
+	a_day: "d",
+	a_hou: "h",
+	a_min: "m",
+	a_sec: "s",
+	// buttons
+	b_sel:'Seleccionar',
+	b_del:'Apagar',
+	b_get:'Obter desta página',
+	b_sav:'Gravar como "Informação antiga"',
+	b_loa:'Carregar informação gravada',
+	b_res:'Recomeçar',
+	// titles
+	t_odt:'Informação antiga',
+	t_ndt:'Informação nova',
+	t_fmt:'Formato',
+	t_col:'Cores',
+	t_inc:'Incluir',
+	t_out:'Estatísticas (código)',
+	t_stb:'Estado',
+	t_pre:'Evolução',
+	t_exp:'Exportar para foruns',
+	// period
+	p_ago:'{period} atrás',
+	p_now:'agora',
+	// colors
+	c_dbg:'Fundo escuro',
+	c_lbg:'Fundo claro',
+	// status (errors)
+	e_nod:'Sem informação antiga',
+	e_nnd:'Sem informação nova',
+	e_odf:'A informação antiga tem formato errado',
+	e_ndf:'A informação nova tem formato errado',
+	e_unk:'Erro inesperado',
+	e_ndt:'Sem informação',
+	e_wft:'Formato errado',
+	// status (success)
+	w_pcs:'Processar',
+	// output
+	o_tdt:'Evolução da aliança desde {oldDate} até {newDate}',
+	o_tet:'Tempo decorrido',
+	o_tas:'Sumario da aliança',
+	o_ptl:'Pontos totais',
+	o_ppm:'Pontos por membro',
+	o_ttt:'Top 3 por pontos totais',
+	o_tts:'Top 3 por pontos ganhos',
+	o_ttp:'Top 3 por percentagem ganha',
+	o_ttg:'Top 3 por posições ganhas',
+	o_trt:'Classificação total de pontos',
+	o_trs:'Classificação pontos ganhos',
+	o_trp:'Classificação percentagem ganha',
+	o_trg:'Classificação posições ganhos',
+	o_tsc:'Casos especiais',
+	o_cnm:'novo membro',
+	o_cla:'deixou aliança',
+	o_bdg:'banido',
+	o_bdq:'ex-banido',
+	o_abt:'Estatísticas realizadas por {link}'
+}

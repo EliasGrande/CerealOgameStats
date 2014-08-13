@@ -1,39 +1,15 @@
 // ==UserScript==
-// @name           CerealOgameStats
-// @description    Make alliance stats from ogame to post in forums
-// @namespace      http://userscripts.org/users/68563/scripts
-// @downloadURL    https://userscripts.org/scripts/source/134405.user.js
-// @updateURL      https://userscripts.org/scripts/source/134405.meta.js
-// @icon           http://s3.amazonaws.com/uso_ss/icon/134405/large.png
-// @version        2.6.1
-// @include        *://*.ogame.*/game/index.php?*page=alliance*
+// @name         CerealOgameStats
+// @description  Make alliance stats from ogame to post in forums
+// @namespace    https://github.com/EliasGrande/
+// @downloadURL  https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.user.js
+// @updateURL    https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.meta.js
+// @version      3.0.0
+// @include      *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
-/*!
-
-	CerealOgameStats
-
-	Makes alliance stats from the ogame alliance memberdata and
-	transforms it into a forum friendly code.
-
-	Copyright (C) 2012 Elías Grande Cásedas
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see http://www.gnu.org/licenses/
-
-*/
+/*! CerealOgameStats (C) 2014 Elías Grande Cásedas | MIT | opensource.org/licenses/MIT */
 (function(){
-
-// crossbrowser unsafeWindow & document & jQuery=$
+////////////
 
 var win = window, doc, $;
 try{if (unsafeWindow) win = unsafeWindow;}
@@ -95,7 +71,7 @@ initMemberList();
 var script =
 {
 	name : 'CerealOgameStats',
-	home : 'http://userscripts.org/scripts/show/134405'
+	home : 'https://github.com/EliasGrande/CerealOgameStats/'
 }
 	
 // extend some prototypes
@@ -243,7 +219,7 @@ I18n.prototype =
 		for (var attr in prop)
 			this.lc[attr] = prop[attr];
 	},
-	/*! addCommas | mredkj.com/javascript/nfbasic.html */
+	// addCommas | mredkj.com/javascript/nfbasic.html
 	number : function (n)
 	{
 		var nStr, x, x1, x2;
@@ -314,7 +290,7 @@ var _ = function (text)
 	return i18n.get(text);
 }
 
-// default locale [en] english
+/*! [i18n=en] */
 i18n.set(
 {	
 	// separators
@@ -380,13 +356,12 @@ i18n.set(
 	o_cla:'leaves the alliance',
 	o_bdg:'banned',
 	o_bdq:'unbanned',
-//	o_ldt:'Latest data (for future statistics)',
 	o_abt:'Statistics performed with {link}',
 	// OGame Error
 	e_oga:'OGame Error, reload this page may fix it'
 });
 
-// locale [es] español
+/*! [i18n=es] */
 if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 {
 	// separators
@@ -450,14 +425,13 @@ if (/es|ar|mx/.test(ogameInfo.language))i18n.set(
 	o_cla:'abandona la alianza',
 	o_bdg:'baneado',
 	o_bdq:'desbaneado',
-//	o_ldt:'Datos más recientes (para futuras estadísticas)',
 	o_abt:'Estadísticas realizadas con {link}',
 	// OGame Error
 	e_oga:'Error de OGame, recargar esta página puede arreglarlo'
-})
+});
 
-/*! locale [fr] francais, by Elvara, http://userscripts.org/topics/116649 */
-else if (/fr/.test(ogameInfo.language))i18n.set(
+/*! [i18n=fr] by Elvara http://userscripts-mirror.org/topics/116649 */
+if (/fr/.test(ogameInfo.language))i18n.set(
 {
 	// separators
 	s_dec: ".",
@@ -522,14 +496,13 @@ else if (/fr/.test(ogameInfo.language))i18n.set(
 	o_cla:'A quitté l\'alliance',
 	o_bdg:'Banni',
 	o_bdq:'Débanni',
-//	o_ldt:'Dernières données (pour statistiques futures)',
 	o_abt:'Statistiques obtenues avec {link}',
 	// OGame Error
 	e_oga:'Erreur OGame, recharger la page peut régler le problème'
-})
+});
 
-/*! locale [tr] türk, by Joaquin09, http://userscripts.org/topics/118658 */
-else if (/tr/.test(ogameInfo.language))i18n.set(
+/*! [i18n=tr] by Joaquin09 http://userscripts-mirror.org/topics/118658 */
+if (/tr/.test(ogameInfo.language))i18n.set(
 {
 	// Ayırıcılar
 	s_dec: ".",
@@ -594,14 +567,13 @@ else if (/tr/.test(ogameInfo.language))i18n.set(
 	o_cla: 'İttifaktan ayrılır',
 	o_bdg: 'Yasaklı',
 	o_bdq: 'Yasağı kaldırılmış',
-//	o_ldt: 'Son Veri (Gelecekteki İstatistikler İçin)',
 	o_abt: '{link} tarafından gerçekleştirilen istatistikler',
 	// OGame Hatası
 	e_oga: 'OGame Hatası, Düzeltmek İçin Sayfayı Tekrar Yükleyin'
-})
+});
 
-/*! locale [pt] português, by wacker faxes, http://userscripts.org/topics/118886 */
-else if (/pt|br/.test(ogameInfo.language))i18n.set(
+/*! [i18n=pt] by wacker faxes http://userscripts-mirror.org/topics/118886 */
+if (/pt|br/.test(ogameInfo.language))i18n.set(
 {
 	// separators
 	s_dec: ".",
@@ -666,12 +638,11 @@ else if (/pt|br/.test(ogameInfo.language))i18n.set(
 	o_cla:'deixou aliança',
 	o_bdg:'banido',
 	o_bdq:'ex-banido',
-//	o_ldt:'Ultima data (para futura estatística)',
 	o_abt:'Estatísticas realizadas por {link}'
-})
+});
 
-/*! locale [it] italiano, by adyr, http://userscripts.org/topics/119582 */
-else if (/it/.test(ogameInfo.language))i18n.set(
+/*! [i18n=it] by adyr http://userscripts-mirror.org/topics/119582 */
+if (/it/.test(ogameInfo.language))i18n.set(
 {
 	// separators
 	s_dec: ".",
@@ -736,11 +707,11 @@ else if (/it/.test(ogameInfo.language))i18n.set(
 	o_cla:'ha lasciato l alleanza',
 	o_bdg:'bannato',
 	o_bdq:'sbannato',
-//	o_ldt:'Dati salvati (per statistiche future)',
 	o_abt:'Statistiche create da {link}',
 	// OGame Error
 	e_oga:'Errore di Ogame, ricarica la pagina'
 });
+/*! [/i18n] */
 
 // colors
 
@@ -770,8 +741,7 @@ Colors.prototype =
 
 var colors = new Colors();
 
-// color profiles
-
+/*! [color=dark-background] */
 colors.add(
 	_('c_dbg'),
 	{
@@ -782,6 +752,7 @@ colors.add(
 	}
 );
 
+/*! [color=light-background] */
 colors.add(
 	_('c_lbg'),
 	{
@@ -791,6 +762,7 @@ colors.add(
 		'{remainsColor}'   : 'blue'
 	}
 );
+/*! [/color] */
 
 // operations
 
@@ -1682,12 +1654,12 @@ Conversor.prototype =
 			include.newData = false;
 			format.select(format.formats.length-1);
 			colors.select(0);
-			// DIRTY DIRTY FIX >>
+			// [DIRTY FIX]
 			var player_high_search = '[color={nameColor}][b]{name}[/b][/color]'.replaceMap(
 				format.selected.patterns).replaceAll(
 				'{name}',ogameInfo.player_name);
 			var player_high_replace = player_high_search.replaceAll('{nameColor}','#FF0');
-			// DIRTY DIRTY FIX <<
+			// [/DIRTY FIX]
 			player_high_search = player_high_search.replaceMap(colors.selected);
 			form.setPreview(format.format(
 				include,
@@ -1701,11 +1673,11 @@ Conversor.prototype =
 				format.selected.patterns['[size=small]'],'<span>'
 			).replaceAll(
 				format.selected.patterns['[size=big]'],'<span style="font-size:20px">'
-			// DIRTY DIRTY FIX >>
+			// [DIRTY FIX]
 			).replaceAll(
 				player_high_search, player_high_replace
 			));
-			// DIRTY DIRTY FIX <<
+			// [/DIRTY FIX]
 			form.hideStatus(); // status OK, no need to show it
 		}
 		catch (e)
@@ -1957,6 +1929,8 @@ Dom.prototype =
 }
 
 var dom = new Dom();
+
+/*! [css] */
 dom.addCss
 (
 	'#'+script.name+' table'+
@@ -2046,6 +2020,7 @@ dom.addCss
 		'background-position: -20px -18px !important;'+
 	'}'
 );
+/*! [/css] */
 
 // form
 
@@ -2694,14 +2669,12 @@ var initJQuery = function()
 	}
 }
 
-// Dean Edwards/Matthias Miller/John Resig
-var init = function()
+/*! [onDOMContentLoaded] by Dean Edwards & Matthias Miller & John Resig */
+var initDone = false, init = function()
 {
 	// quit if this function has already been called
-	if (arguments.callee.done) return;
-
-	// flag this function so we don't do the same thing twice
-	arguments.callee.done = true;
+	if (initDone) return;
+	initDone = true;
 
 	// kill the timer
 	if (_timer) clearInterval(_timer);
@@ -2729,4 +2702,5 @@ if (/WebKit/i.test(win.navigator.userAgent)) { // sniff
 /* for other browsers */
 win.onload = init;
 
+/////
 })();
