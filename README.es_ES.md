@@ -42,7 +42,7 @@ Información del script para foros de OGame
 ```
 
 [OGame]:http://en.ogame.gameforge.com/
-[tolerated by OGame Origin]:http://board.origin.ogame.gameforge.com/board175-user-projects/board39-official-tolerated-tools-addons-scripts/4107-cerealogamestats/
+[legalizada por OGame Origin]:http://board.origin.ogame.gameforge.com/board175-user-projects/board39-official-tolerated-tools-addons-scripts/4107-cerealogamestats/
 
 [Firefox]:https://www.mozilla.org/firefox
 [Greasemonkey]:https://addons.mozilla.org/firefox/addon/greasemonkey/
@@ -51,10 +51,10 @@ Información del script para foros de OGame
 [Chrome]:https://www.google.com/chrome/
 [Tampermonkey]:https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo
 
-[issues]:/../../issues
+[asuntos]:/../../issues
 [README.md]:README.md
-[translations]:dist/locale
-[install link]:dist/releases/latest.user.js?raw=true
+[traducciones]:dist/locale
+[enlace de instalación]:dist/releases/latest.user.js?raw=true
 [screenshot]:dist/img/screenshot.png?raw=true
 
 [gb-flag]:https://dl.dropboxusercontent.com/u/89283239/icons/famfamfam.com/flag_icons/png/gb.png
