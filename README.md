@@ -54,7 +54,7 @@ Script information for OGame forums
 [issues]:/../../issues
 [README.es\_ES.md]:README.es_ES.md
 [translations]:dist/locale
-[install link]:dist/releases/latest.user.js?raw=true
+[install link]:dist/releases/latest.user.js?raw=true&.user.js
 [screenshot]:dist/img/screenshot.png?raw=true
 
 [es-flag]:https://dl.dropboxusercontent.com/u/89283239/icons/famfamfam.com/flag_icons/png/es.png
