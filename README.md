@@ -37,7 +37,7 @@ Script information for OGame forums
 [*]Download : [url]https://github.com/EliasGrande/CerealOGameStats/raw/master/dist/releases/latest.user.js[/url]
 [*]Screenshot : [url]https://github.com/EliasGrande/CerealOGameStats/raw/master/dist/img/screenshot.png[/url]
 [*]Browser : Firefox + Greasemonkey or Scriptish & Chrome + Tampermonkey
-[*]Languages : English, Español, Française, Italiano, Português & Türk
+[*]Languages : English, Español, Française, Italiano, Português, Türk & Русский
 [/list]
 ```
 
