@@ -4,7 +4,7 @@ CerealOgameStats
 
 Este script realiza estadísticas de progreso de la alianza a partir de su lista de miembros en [OGame] y lo compacta para foros.
 
-Las traducciones disponibles son **English** (*por defecto*), **Español** (*ogame.com.es, ogame.com.ar, mx.ogame.org*), **Française** (*ogame.fr*), **Italiano** (*ogame.it*), **Português** (ogame.com.pt, ogame.com.br) y **Türk** (*tr.ogame.org*) pero puedes enviarme mas [traducciones] si lo deseas, preferiblemente mediante los [asuntos] de este proyecto.
+Las traducciones disponibles son **English** (*por defecto*), **Español** (*ogame.com.es, ogame.com.ar, mx.ogame.org*), **Française** (*ogame.fr*), **Italiano** (*ogame.it*), **Português** (ogame.com.pt, ogame.com.br), **Türk** (*tr.ogame.org*) y **Русский** (*ru.ogame.gameforge.com*) pero puedes enviarme mas [traducciones] si lo deseas, preferiblemente mediante los [asuntos] de este proyecto.
 
 \[ ![gb-flag] English \] *Click the following link to view this document in English: [README.md]*
 
