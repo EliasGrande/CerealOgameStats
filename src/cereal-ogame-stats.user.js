@@ -4,7 +4,7 @@
 // @namespace    https://github.com/EliasGrande/
 // @downloadURL  https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.user.js
 // @updateURL    https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.meta.js
-// @version      3.0.0
+// @version      3.1.0
 // @include      *://*.ogame.*/game/index.php?*page=alliance*
 // ==/UserScript==
 /*! CerealOgameStats (C) 2014 Elías Grande Cásedas | MIT | opensource.org/licenses/MIT */
@@ -710,6 +710,77 @@ if (/it/.test(ogameInfo.language))i18n.set(
 	o_abt:'Statistiche create da {link}',
 	// OGame Error
 	e_oga:'Errore di Ogame, ricarica la pagina'
+});
+
+/*! [i18n=ru] by Asiman board.origin.ogame.gameforge.com/board175-u/board39-o/p34454-c#post34454 */
+if (/ru/.test(ogameInfo.language))i18n.set(
+{
+	// separators
+	s_dec: ".",
+	s_tho: ",",
+	s_dat: "/",
+	s_tim: ":",
+	// abb time units
+	a_wee: "н",
+	a_day: "д",
+	a_hou: "ч",
+	a_min: "м",
+	a_sec: "с",
+	// buttons
+	b_sel:'Выделить',
+	b_del:'Очистить',
+	b_get:'Получить с этой страницы',
+	b_sav:'Сохранить "Старые данные"',
+	b_loa:'Загрузить сохраненные данные',
+	b_res:'Обнулить статистику',
+	// titles
+	t_odt:'Старые данные',
+	t_ndt:'Новые данные',
+	t_fmt:'Формат',
+	t_col:'Цвета',
+	t_inc:'Показать/Скрыть',
+	t_out:'Статистика (код)',
+	t_stb:'Статус',
+	t_pre:'Прогресс',
+	t_exp:'Экспорт для форума',
+	// period
+	p_ago:'{period} с предыдущей даты',
+	p_now:'сейчас',
+	// colors
+	c_dbg:'Темный фон',
+	c_lbg:'Светлый фон',
+	// status (errors)
+	e_nod:'Нет старых данных',
+	e_nnd:'Нет новых данных',
+	e_odf:'Старые данные имеют неверный формат',
+	e_ndf:'Новые данные имеют неверный формат',
+	e_unk:'Неожиданная ошибка',
+	e_ndt:'Нет данных',
+	e_wft:'Неверный формат',
+	// status (success)
+	w_pcs:'Обработка',
+	// output
+	o_tdt:'Прогресс альянса с {oldDate} по {newDate}',
+	o_tet:'Прошедшее время',
+	o_tas:'Сумарно по альянсу',
+	o_ptl:'Общее количество очков',
+	o_ppm:'Очки на одного члена',
+	o_ttt:'Топ 3 по общему количеству очков',
+	o_tts:'Топ 3 по полученому количеству очков',
+	o_ttp:'Топ 3 по полученому проценту',
+	o_ttg:'Топ 3 по полученым позициям',
+	o_trt:'Всего количество очей по топу',
+  	o_trs:'Приобретено количество очей по топу',
+	o_trp:'Приобретено процентов по топу',
+	o_trg:'Приобретено позиций по топу',
+	o_tsc:'Особые случаи',
+	o_cnm:'новый игрок альянса',
+	o_cla:'покинул альянс',
+	o_bdg:'заблокирован',
+	o_bdq:'разблокирован',
+	o_abt:'Первоисточник статистики: {link}',
+	// OGame Error
+	e_oga:'Ошибка OGame, перезагрузка страници может исправить данную ошибку'
 });
 /*! [/i18n] */
 
