@@ -9,7 +9,7 @@
 // @include      *://*.ogame.*/game/index.php?*page=alliance*
 // @include      *://*.ogame.gameforge.*/game/index.php?*page=alliance*
 // ==/UserScript==
-/*! CerealOgameStats (C) 2015 Elías Grande Cásedas | MIT | opensource.org/licenses/MIT */
+/*! CerealOgameStats (C) 2016 Elías Grande Cásedas | MIT | opensource.org/licenses/MIT */
 (function(){
 ////////////
 
