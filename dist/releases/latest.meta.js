@@ -5,7 +5,7 @@
 // @downloadURL  https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.user.js
 // @updateURL    https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.meta.js
 // @icon         https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/img/icon.png
-// @version      3.1.1
+// @version      3.1.2
 // @include      *://*.ogame.*/game/index.php?*page=alliance*
 // @include      *://*.ogame.gameforge.*/game/index.php?*page=alliance*
 // ==/UserScript==

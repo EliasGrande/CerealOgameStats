@@ -5,11 +5,11 @@
 // @downloadURL  https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.user.js
 // @updateURL    https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.meta.js
 // @icon         https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/img/icon.png
-// @version      3.1.1
+// @version      3.1.2
 // @include      *://*.ogame.*/game/index.php?*page=alliance*
 // @include      *://*.ogame.gameforge.*/game/index.php?*page=alliance*
 // ==/UserScript==
-/*! CerealOgameStats (C) 2016 Elías Grande Cásedas | MIT | opensource.org/licenses/MIT */
+/*! CerealOgameStats (C) 2017 Elías Grande Cásedas | MIT | opensource.org/licenses/MIT */
 (function(){
 ////////////
 
@@ -32,7 +32,7 @@ var addCss = function (text)
 	
 	var head = doc.getElementsByTagName("head")[0];
 	head.appendChild(el);
-}
+};
 
 addCss('#member-list {display:none;}');
 
@@ -41,7 +41,7 @@ var memberList =
 	ready : false,
 	list  : doc.createElement('table'),
 	wait  : 10
-}
+};
 
 var initMemberList = function()
 {
@@ -64,7 +64,7 @@ var initMemberList = function()
 		var _this = this;
 		setTimeout(initMemberList, memberList.wait);
 	}
-}
+};
 
 initMemberList();
 
@@ -74,16 +74,16 @@ var script =
 {
 	name : 'CerealOgameStats',
 	home : 'https://github.com/EliasGrande/CerealOgameStats/'
-}
+};
 	
 // extend some prototypes
 
-String.prototype.replaceAll = function (search, replacement)
+String.prototype._cos_replaceAll = function (search, replacement)
 {
 	return this.split(search).join(replacement);
-}
+};
 
-String.prototype.recursiveReplaceMap = function (org, rep, index)
+String.prototype._cos_recursiveReplaceMap = function (org, rep, index)
 {
 	if (index==0)
 		return this.split(org[0]).join(rep[0]);
@@ -91,13 +91,13 @@ String.prototype.recursiveReplaceMap = function (org, rep, index)
 	var i, arr = this.split(org[index]);
 	for (i in arr)
 	{
-		arr[i] = arr[i].recursiveReplaceMap(org, rep, index-1);
+		arr[i] = arr[i]._cos_recursiveReplaceMap(org, rep, index-1);
 	}
 	
 	return arr.join(rep[index]);
-}
+};
 
-String.prototype.replaceMap = function (replaceMap)
+String.prototype._cos_replaceMap = function (replaceMap)
 {
 	var key, org, rep, count;
 	org = new Array();
@@ -114,13 +114,13 @@ String.prototype.replaceMap = function (replaceMap)
 	if (count==0)
 		return this;
 	else
-		return this.recursiveReplaceMap(org,rep,count-1);
-}
+		return this._cos_recursiveReplaceMap(org, rep, count-1);
+};
 
-String.prototype.trimNaN = function ()
+String.prototype._cos_trimNaN = function ()
 {
 	return this.replace(/^\D+$/,'').replace(/^\D*(\d)/,'$1').replace(/(\d)\D*$/,'$1');
-}
+};
 
 var onDOMContentLoaded = function()
 {
@@ -141,7 +141,7 @@ var OgameInfo = function()
 	this.getMeta("universe"   ,"ogame-universe"   ,null);
 	this.getMeta("alliance_id","ogame-alliance-id",null);
 	this.getMeta("player_name","ogame-player-name","");
-}
+};
 
 OgameInfo.prototype =
 {
@@ -158,7 +158,7 @@ OgameInfo.prototype =
 			this[name] = def;
 		}
 	}
-}
+};
 
 var ogameInfo = new OgameInfo();
 
@@ -199,14 +199,14 @@ var storage =
 			return (val == 'undefined') ? null : val;
 		}
 	}
-}
+};
 
 // internationalization (i18n)
 
 var I18n = function()
 {
 	this.lc = {};
-}
+};
 
 I18n.prototype =
 {
@@ -237,11 +237,11 @@ I18n.prototype =
 	},
 	date : function (d)
 	{
-		return d.trimNaN().split(/\D+/).join(this.lc.s_dat);
+		return (d + '')._cos_trimNaN().split(/\D+/).splice(0, 3).join(this.lc.s_dat);
 	},
 	time : function (t)
 	{
-		return t.trimNaN().split(/\D+/).join(this.lc.s_tim);
+		return (t + '')._cos_trimNaN().split(/\D+/).splice(-3).join(this.lc.s_tim);
 	},
 	period : function (seconds)
 	{
@@ -283,14 +283,14 @@ I18n.prototype =
 		
 		return output.trim();
 	}
-}
+};
 
 var i18n = new I18n();
 
 var _ = function (text)
 {
 	return i18n.get(text);
-}
+};
 
 /*! [i18n=en] */
 i18n.set(
@@ -793,7 +793,7 @@ var Colors = function ()
 	this.names = new Array();
 	this.colors = new Array();
 	this.selected = null;
-}
+};
 
 Colors.prototype =
 {
@@ -808,9 +808,9 @@ Colors.prototype =
 	},
 	replace : function (tpl)
 	{
-		return tpl.replaceMap(this.selected);
+		return tpl._cos_replaceMap(this.selected);
 	}
-}
+};
 
 var colors = new Colors();
 
@@ -850,7 +850,7 @@ var Calc =
 			percent: percent
 		}
 	}
-}
+};
 
 // format
 
@@ -862,7 +862,7 @@ var Format = function()
 	{
 		'[':"[[u][/u]",
 		']':"[u][/u]]"
-	}
+	};
 	this.lastReplace =
 	{
 		'{grows}'     : "\u00BB", // »
@@ -875,7 +875,7 @@ var Format = function()
 		'{rank}'      : '#',
 		'{\\'         : '{',
 		'\\}'         : '}'
-	}
+	};
 	this.layout = {
 		sectionStart : '[size=big]{title}[/size]',
 		sectionEnd   : "\n\n",
@@ -942,9 +942,8 @@ var Format = function()
 		scriptLink :"\n"+'[i]'+
 		_('o_abt').replace('{link}','[url={scriptHome}]{scriptName}[/url]')
 		+'[/i]'
-	}
-		
-}
+	};
+};
 
 Format.prototype =
 {
@@ -965,16 +964,16 @@ Format.prototype =
 	escape : function (text)
 	{
 		if (this.selected.escapeMap)
-			return text.replaceMap(this.selected.escapeMap);
+			return text._cos_replaceMap(this.selected.escapeMap);
 		else
-			return text.replaceMap(this.escapeMap);
+			return text._cos_replaceMap(this.escapeMap);
 	},
 	diff : function (input, diff)
 	{
 		var output = input;
 		if (diff < 0)
 		{
-			output = output.replaceMap({
+			output = output._cos_replaceMap({
 				'{diffColor}' : '{decreasesColor}',
 				'{diff}'      : '{decreases}'
 			});
@@ -982,12 +981,12 @@ Format.prototype =
 		else
 		{	
 			if (diff > 0)
-				output = output.replaceMap({
+				output = output._cos_replaceMap({
 					'{diffColor}' : '{growsColor}',
 					'{diff}'      : '{grows}'
 				});
 			else
-				output = output.replaceMap({
+				output = output._cos_replaceMap({
 					'{diffColor}' : '{remainsColor}',
 					'{diff}'      : '{remains}'
 				});
@@ -996,18 +995,18 @@ Format.prototype =
 	},
 	header : function (allyInfo)
 	{
-		return this.layout.header.replaceMap(
+		return this.layout.header._cos_replaceMap(
 		{
 			'{title}' :
 				_('o_tdt'
-				).replaceMap(
+				)._cos_replaceMap(
 				{
-					'{oldDate}' : this.layout.dateTime.replaceMap(
+					'{oldDate}' : this.layout.dateTime._cos_replaceMap(
 					{
 						'{date}' : allyInfo.oldDate,
 						'{time}' : allyInfo.oldTime
 					}),
-					'{newDate}' : this.layout.dateTime.replaceMap(
+					'{newDate}' : this.layout.dateTime._cos_replaceMap(
 					{
 						'{date}' : allyInfo.newDate,
 						'{time}' : allyInfo.newTime
@@ -1026,13 +1025,13 @@ Format.prototype =
 		if (allyInfo.oldScore==0)
 			return '';
 		
-		return this.layout.sectionStart.replaceAll(
+		return this.layout.sectionStart._cos_replaceAll(
 			'{title}', _('o_tas')
 		)+
 		this.diff(
 			this.layout.allianceLine,
 			allyInfo.diffScore
-		).replaceMap(
+		)._cos_replaceMap(
 		{
 			'{title}'       : _('o_ptl'),
 			'{newScore}'    : allyInfo.formatted.newScore,
@@ -1042,7 +1041,7 @@ Format.prototype =
 		this.diff(
 			this.layout.allianceLine,
 			allyInfo.diffMemberScore
-		).replaceMap({
+		)._cos_replaceMap({
 			'{title}'       : _('o_ppm'),
 			'{newScore}'    : allyInfo.formatted.newMemberScore,
 			'{diffScore}'   : allyInfo.formatted.diffMemberScore,
@@ -1071,14 +1070,14 @@ Format.prototype =
 			output = output + this.diff(
 				lineLayout,
 				info.diffScore
-			).replaceMap({
+			)._cos_replaceMap({
 				'{position}' : this.position(i+1,end),
 				'{name}'     : this.escape(info.name),
-				'{diffPos}'  : info.formatted.diffPos.replaceMap({
+				'{diffPos}'  : info.formatted.diffPos._cos_replaceMap({
 					'+': '{up}',
 					'-': '{down}'
 				})
-			}).replaceAll(
+			})._cos_replaceAll(
 				'{'+key+'}', info.formatted[key]
 			);
 		}
@@ -1100,7 +1099,7 @@ Format.prototype =
 			output = output + this.diff(
 				layout,
 				info.diffScore
-			).replaceMap({
+			)._cos_replaceMap({
 				'{position}'     : this.position(i+1,end),
 				'{name}'         : this.escape(info.name),
 				'{oldScore}'     : info.formatted.oldScore,
@@ -1116,9 +1115,9 @@ Format.prototype =
 			output = output + this.diff(
 				layout,
 				info.diffPos
-			).replaceMap({
+			)._cos_replaceMap({
 				'{newPos}'  : info.formatted.newPos,
-				'{diffPos}' : info.formatted.diffPos.replaceMap({
+				'{diffPos}' : info.formatted.diffPos._cos_replaceMap({
 					'+': '{up}',
 					'-': '{down}'
 				})
@@ -1139,7 +1138,7 @@ Format.prototype =
 		for (key in from0MembersInfo)
 		{
 			info = from0MembersInfo[key];
-			output = output + this.layout.from0Member.replaceMap({
+			output = output + this.layout.from0Member._cos_replaceMap({
 				'{name}'   : this.escape(info.name),
 				'{score}'  : info.score,
 				'{reason}' : info.reason
@@ -1149,7 +1148,7 @@ Format.prototype =
 		for (key in to0MembersInfo)
 		{
 			info = to0MembersInfo[key];
-			output = output + this.layout.to0Member.replaceMap({
+			output = output + this.layout.to0Member._cos_replaceMap({
 				'{name}'   : this.escape(info.name),
 				'{score}'  : info.score,
 				'{reason}' : info.reason
@@ -1308,7 +1307,7 @@ Format.prototype =
 		if (include.oldData)
 		{
 			data = JSON.parse(oldData);
-			output = output + this.layout.scriptData.replaceMap({
+			output = output + this.layout.scriptData._cos_replaceMap({
 				'{scriptDataTitle}' : _('t_odt') + ' - ' + data.strDate + ' (' + data.strTime + ')',
 				'{scriptData}'      : '{oldData}'
 			});
@@ -1317,25 +1316,25 @@ Format.prototype =
 		if (include.newData)
 		{
 			data = JSON.parse(newData);
-			output = output + this.layout.scriptData.replaceMap({
+			output = output + this.layout.scriptData._cos_replaceMap({
 				'{scriptDataTitle}' : _('t_ndt') + ' - ' + data.strDate + ' (' + data.strTime + ')',
 				'{scriptData}'      : '{newData}'
 			});
 		}
 		
 		output = output + this.layout.scriptLink;
-		output = output.replaceMap(
+		output = output._cos_replaceMap(
 			this.selected.patterns
-		).replaceMap(
+		)._cos_replaceMap(
 			colors.selected
-		).replaceMap({
+		)._cos_replaceMap({
 			'{scriptName}' : script.name,
 			'{scriptHome}' : script.home
-		}).replaceMap(
+		})._cos_replaceMap(
 			this.lastReplace
 		).replace(
 			'{oldData}',
-			oldData.replaceMap({
+			oldData._cos_replaceMap({
 				'<' : "\\u003C",
 				'>' : "\\u003E",
 				'[' : "\\u005B",
@@ -1343,7 +1342,7 @@ Format.prototype =
 			})
 		).replace(
 			'{newData}',
-			newData.replaceMap({
+			newData._cos_replaceMap({
 				'<' : "\\u003C",
 				'>' : "\\u003E",
 				'[' : "\\u005B",
@@ -1425,7 +1424,7 @@ format.add(
 
 // convert
 
-var Conversor = function() {}
+var Conversor = function() {};
 
 Conversor.prototype =
 {
@@ -1511,7 +1510,7 @@ Conversor.prototype =
 							diffScore = 0;
 							diffPercent = 0;
 							fDiffScore = '+0';
-							fDiffPercent = '+'+i18n.number('0.00');
+							fDiffPercent = '+' + i18n.number('0.00');
 						}
 						else
 						{
@@ -1533,10 +1532,8 @@ Conversor.prototype =
 						diff = Calc.diffScore(oldInfo.score, newInfo.score);
 						diffScore = diff.score;
 						diffPercent = diff.percent;
-						fDiffScore = ((diffScore<0)?'':'+')+
-							i18n.number(diffScore.toFixed());
-						fDiffPercent = ((diffPercent<0)?'':'+')+
-							i18n.number(diffPercent.toFixed(2));
+						fDiffScore = ((diffScore<0) ? '' : '+') + i18n.number(diffScore.toFixed());
+						fDiffPercent = ((diffPercent<0) ? '' : '+') + i18n.number(diffPercent.toFixed(2));
 					}
 					
 					mergeInfo = {
@@ -1550,15 +1547,14 @@ Conversor.prototype =
 						diffPercent : diffPercent
 					};
 					mergeInfo.formatted = {
-						oldScore  : i18n.number(mergeInfo.oldScore),
-						newScore  : i18n.number(mergeInfo.newScore),
-						oldPos    : i18n.number(mergeInfo.oldPos.toFixed()),
-						newPos    : i18n.number(mergeInfo.newPos.toFixed()),
-						diffPos   : ((mergeInfo.diffPos<0)?'':'+')+
-							i18n.number(mergeInfo.diffPos.toFixed()),
-						diffScore : fDiffScore,
+						oldScore    : i18n.number(mergeInfo.oldScore),
+						newScore    : i18n.number(mergeInfo.newScore),
+						oldPos      : i18n.number(mergeInfo.oldPos.toFixed()),
+						newPos      : i18n.number(mergeInfo.newPos.toFixed()),
+						diffPos     : ((mergeInfo.diffPos<0) ? '' : '+') + i18n.number(mergeInfo.diffPos.toFixed()),
+						diffScore   : fDiffScore,
 						diffPercent : fDiffPercent
-					}
+					};
 					this.membersInfo.push(mergeInfo);
 				}
 			}
@@ -1728,12 +1724,12 @@ Conversor.prototype =
 			format.select(format.formats.length-1);
 			colors.select(0);
 			// [DIRTY FIX]
-			var player_high_search = '[color={nameColor}][b]{name}[/b][/color]'.replaceMap(
-				format.selected.patterns).replaceAll(
+			var player_high_search = '[color={nameColor}][b]{name}[/b][/color]'._cos_replaceMap(
+				format.selected.patterns)._cos_replaceAll(
 				'{name}',ogameInfo.player_name);
-			var player_high_replace = player_high_search.replaceAll('{nameColor}','#FF0');
+			var player_high_replace = player_high_search._cos_replaceAll('{nameColor}','#FF0');
 			// [/DIRTY FIX]
-			player_high_search = player_high_search.replaceMap(colors.selected);
+			player_high_search = player_high_search._cos_replaceMap(colors.selected);
 			form.setPreview(format.format(
 				include,
 				this.allyInfo,
@@ -1742,12 +1738,12 @@ Conversor.prototype =
 				this.from0MembersInfo,
 				form.oldList.value.trim(),
 				form.newList.value.trim()
-			).replaceAll(
+			)._cos_replaceAll(
 				format.selected.patterns['[size=small]'],'<span>'
-			).replaceAll(
+			)._cos_replaceAll(
 				format.selected.patterns['[size=big]'],'<span style="font-size:20px">'
 			// [DIRTY FIX]
-			).replaceAll(
+			)._cos_replaceAll(
 				player_high_search, player_high_replace
 			));
 			// [/DIRTY FIX]
@@ -2459,16 +2455,25 @@ Form.prototype =
 			members : {}
 		};
 
-		var trs =
-			memberList.list.getElementsByTagName('tbody')[0
-			].getElementsByTagName('tr');
+		var trs = memberList
+			.list
+			.getElementsByTagName('tbody')[0]
+			.getElementsByTagName('tr');
 		
 		for (var i=0; i<trs.length; i++)
 		{
 			var tds = trs[i].getElementsByTagName('td');
 			
-			var user = tds[0].innerHTML.trim();
+			// user
+			var user = tds[0].getElementsByTagName('span');
+			if (user.length > 0)
+				user = user[0]; // ogame>=6
+			else
+				user = tds[0]; // ogame<6 compatibility
+			user = user.innerHTML.trim();
+			// win.console.log('user:', user);
 			
+			// rank
 			var rank;
 			var sel = tds[2].getElementsByTagName('select');
 			if(sel.length > 0)
@@ -2476,23 +2481,34 @@ Form.prototype =
 			else
 				rank = tds[2].innerHTML;
 			rank = rank.trim();
+			// win.console.log('rank:', rank);
 			
+			// score
 			var score = tds[3].getElementsByTagName('span');
-                        if (score.length > 0)
-                            score = score[0]; // ogame<5 compatibility
-                        else
-                            score = tds[3];
+			if (score.length > 0)
+				score = score[0]; // ogame<5 compatibility
+			else
+				score = tds[3]; // ogame>=5
 			var position = score.getElementsByTagName('a')[0];
 			score = score.getAttribute('title');
 			score = parseInt(score.replace(/\D/gi,''));
+			// win.console.log('score:', score);
+			
+			// position & id
 			var id = position.getAttribute('href');
 			id = parseInt(id.replace(/^.*searchRelId\=(\d+)(\D.*)?$/,'$1'));
 			position = parseInt(position.innerHTML.replace(/\D/gi,''));
+			// win.console.log('position:', position);
+			// win.console.log('id:', id);
 			
-			var coord = tds[4].getElementsByTagName('a')[0].innerHTML;
+			// coord
+			var coord = tds[4].getElementsByTagName('a')[0].innerHTML.trim(); // ogame<6 compatibility
+			if (!coord) coord = tds[4].getElementsByTagName('a')[1].innerHTML.trim(); // ogame>=6
 			coord = coord.replace(/[^\d\:]/gi,'');
+			// win.console.log('coord:', coord);
 			
 			var date = i18n.date(tds[5].innerHTML);
+			// win.console.log('date:', date);
 			
 			data.members[user]=
 			{
@@ -2511,7 +2527,7 @@ Form.prototype =
 				/NaN|undefined|null/.test(info.s+'') ||
 				/NaN|undefined|null/.test(info.p+'') ||
 				(!(/^\d+\:\d+\:\d+$/.test(info.c+''))) ||
-				(info.d) == null || typeof info.r == 'undefined'
+				(info.d) == null || typeof info.d == 'undefined'
 			)
 			{
 				return false;
