@@ -2,11 +2,11 @@
 CerealOgameStats
 ================
 
-\[ ![es-flag] Spanish \] *Para consultar este documento en español pulse este enlace: [README.es\_ES.md]*
-
 This script makes alliance evolution stats from the [OGame] alliance memberlist and transforms it into a forum friendly code.
 
 The available interface languages are **English** (*default language*), **Español** (*ogame.com.es, ogame.com.ar, mx.ogame.org*), **Française** (*ogame.fr*), **Italiano** (*ogame.it*), **Português** (ogame.com.pt, ogame.com.br), **Türk** (*tr.ogame.org*) and **Русский** (*ru.ogame.gameforge.com*) but you can send me more [translations] if you want, preferably through the [issues] of this project.
+
+\[ ![es-flag] Spanish \] *Para consultar este documento en español pulse este enlace: [README.es\_ES.md]*
 
 Installation
 ------------
