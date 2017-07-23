@@ -56,4 +56,4 @@ Información del script para foros de OGame
 [traducciones]:dist/locale
 [enlace de instalación]:dist/releases/latest.user.js?raw=true&.user.js
 [screenshot]:dist/img/screenshot.png?raw=true
-[gb-flag]:dist/img/icons/gb-flag.png?raw=true
+[gb-flag]:dist/img/icons/gb-flag.gif?raw=true
