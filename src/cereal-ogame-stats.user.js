@@ -2506,7 +2506,7 @@ Form.prototype =
 			// coord
 			/*! Extraction method changed because seems that Ouraios found a non-anchor (tag A) scenario, see https://github.com/ouraios/CerealOgameStats/commit/b83b33bd8cbd23882d254684bbd69b5d07de720a */
 			var coord = tds[4].innerHTML.split(/[\r\n\s]/).join('').replace(/^.*(\d+\:\d+\:\d+).*$/g,'$1');
-			win.console.log('coord:', coord);
+			// win.console.log('coord:', coord);
 			
 			var date = i18n.date(tds[5].innerHTML);
 			// win.console.log('date:', date);
