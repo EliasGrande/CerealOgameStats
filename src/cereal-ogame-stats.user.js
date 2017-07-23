@@ -5,7 +5,7 @@
 // @downloadURL  https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.user.js
 // @updateURL    https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/releases/latest.meta.js
 // @icon         https://github.com/EliasGrande/CerealOgameStats/raw/master/dist/img/icon.png
-// @version      3.1.2
+// @version      3.1.3
 // @include      *://*.ogame.*/game/index.php?*page=alliance*
 // @include      *://*.ogame.gameforge.*/game/index.php?*page=alliance*
 // ==/UserScript==
@@ -2471,6 +2471,8 @@ Form.prototype =
 			else
 				user = tds[0]; // ogame<6 compatibility
 			user = user.innerHTML.trim();
+			/*! Ouraios FIX, not sure why this is needed, from https://github.com/ouraios/CerealOgameStats/commit/b83b33bd8cbd23882d254684bbd69b5d07de720a */
+			user = user.replace(' (u)', '');
 			// win.console.log('user:', user);
 			
 			// rank
@@ -2502,10 +2504,9 @@ Form.prototype =
 			// win.console.log('id:', id);
 			
 			// coord
-			var coord = tds[4].getElementsByTagName('a')[0].innerHTML.trim(); // ogame<6 compatibility
-			if (!coord) coord = tds[4].getElementsByTagName('a')[1].innerHTML.trim(); // ogame>=6
-			coord = coord.replace(/[^\d\:]/gi,'');
-			// win.console.log('coord:', coord);
+			/*! Extraction method changed because seems that Ouraios found a non-anchor (tag A) scenario, see https://github.com/ouraios/CerealOgameStats/commit/b83b33bd8cbd23882d254684bbd69b5d07de720a */
+			var coord = tds[4].innerHTML.split(/[\r\n\s]/).join('').replace(/^.*(\d+\:\d+\:\d+).*$/g,'$1');
+			win.console.log('coord:', coord);
 			
 			var date = i18n.date(tds[5].innerHTML);
 			// win.console.log('date:', date);
