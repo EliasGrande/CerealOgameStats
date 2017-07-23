@@ -4,7 +4,7 @@ CerealOgameStats
 
 Este script realiza estadísticas de progreso de la alianza a partir de su lista de miembros en [OGame] y lo compacta para foros.
 
-Las traducciones disponibles son **English** (*por defecto*), **Español** (*ogame.com.es, ogame.com.ar, mx.ogame.org*), **Française** (*ogame.fr*), **Italiano** (*ogame.it*), **Português** (ogame.com.pt, ogame.com.br), **Türk** (*tr.ogame.org*) y **Русский** (*ru.ogame.gameforge.com*) pero puedes enviarme mas [traducciones] si lo deseas, preferiblemente mediante los [asuntos] de este proyecto.
+Las traducciones disponibles son **English** (*por defecto*), **Español** (*es.ogame.gameforge.com, ar.ogame.gameforge.com, mx.ogame.gameforge.com*), **Française** (*fr.ogame.gameforge.com*), **Italiano** (*it.ogame.gameforge.com*), **Português** (*pt.ogame.gameforge.com, br.ogame.gameforge.com*), **Русский** (*ru.ogame.gameforge.com*) y **Türk** (*tr.ogame.gameforge.com*) pero puedes enviarme mas [traducciones] si lo deseas, preferiblemente mediante los [asuntos] de este proyecto.
 
 \[ ![gb-flag] English \] *Click the following link to view this document in English: [README.md]*
 
@@ -37,7 +37,7 @@ Información del script para foros de OGame
 [*]Download : [url]https://github.com/EliasGrande/CerealOGameStats/raw/master/dist/releases/latest.user.js[/url]
 [*]Screenshot : [url]https://github.com/EliasGrande/CerealOGameStats/raw/master/dist/img/screenshot.png[/url]
 [*]Browser : Firefox + Greasemonkey or Scriptish & Chrome + Tampermonkey
-[*]Languages : English, Español, Française, Italiano, Português, Türk & Русский
+[*]Languages : English, Español, Française, Italiano, Português, Русский & Türk
 [/list]
 ```
 

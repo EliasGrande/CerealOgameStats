@@ -4,7 +4,7 @@ CerealOgameStats
 
 This script makes alliance evolution stats from the [OGame] alliance memberlist and transforms it into a forum friendly code.
 
-The available interface languages are **English** (*default language*), **Español** (*ogame.com.es, ogame.com.ar, mx.ogame.org*), **Française** (*ogame.fr*), **Italiano** (*ogame.it*), **Português** (ogame.com.pt, ogame.com.br), **Türk** (*tr.ogame.org*) and **Русский** (*ru.ogame.gameforge.com*) but you can send me more [translations] if you want, preferably through the [issues] of this project.
+The available interface languages are **English** (*default language*), **Español** (*es.ogame.gameforge.com, ar.ogame.gameforge.com, mx.ogame.gameforge.com*), **Française** (*fr.ogame.gameforge.com*), **Italiano** (*it.ogame.gameforge.com*), **Português** (*pt.ogame.gameforge.com, br.ogame.gameforge.com*), **Русский** (*ru.ogame.gameforge.com*) and **Türk** (*tr.ogame.gameforge.com*) but you can send me more [translations] if you want, preferably through the [issues] of this project.
 
 \[ ![es-flag] Spanish \] *Para consultar este documento en español pulse este enlace: [README.es\_ES.md]*
 
@@ -37,7 +37,7 @@ Script information for OGame forums
 [*]Download : [url]https://github.com/EliasGrande/CerealOGameStats/raw/master/dist/releases/latest.user.js[/url]
 [*]Screenshot : [url]https://github.com/EliasGrande/CerealOGameStats/raw/master/dist/img/screenshot.png[/url]
 [*]Browser : Firefox + Greasemonkey or Scriptish & Chrome + Tampermonkey
-[*]Languages : English, Español, Française, Italiano, Português, Türk & Русский
+[*]Languages : English, Español, Française, Italiano, Português, Русский & Türk
 [/list]
 ```
 
