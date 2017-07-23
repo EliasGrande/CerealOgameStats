@@ -56,7 +56,4 @@ Script information for OGame forums
 [translations]:dist/locale
 [install link]:dist/releases/latest.user.js?raw=true&.user.js
 [screenshot]:dist/img/screenshot.png?raw=true
-
-[es-flag]:https://dl.dropboxusercontent.com/u/89283239/icons/famfamfam.com/flag_icons/png/es.png
-
-
+[es-flag]:dist/img/icons/es-flag.gif?raw=true

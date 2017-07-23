@@ -56,7 +56,4 @@ Información del script para foros de OGame
 [traducciones]:dist/locale
 [enlace de instalación]:dist/releases/latest.user.js?raw=true&.user.js
 [screenshot]:dist/img/screenshot.png?raw=true
-
-[gb-flag]:https://dl.dropboxusercontent.com/u/89283239/icons/famfamfam.com/flag_icons/png/gb.png
-
-
+[gb-flag]:dist/img/icons/gb-flag.png?raw=true
