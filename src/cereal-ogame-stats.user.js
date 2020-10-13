@@ -1093,6 +1093,7 @@ Format.prototype =
 		for (i=0; i<end; i++)
 		{
 			info = membersInfo[i];
+			info.name = info.name.replace(/\(.+\)/gm, '');
 			var layout = (info.diffScore==0)
 				? this.layout.rankLineNoDiff
 				: this.layout.rankLine;
